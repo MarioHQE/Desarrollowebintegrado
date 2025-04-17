@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login y Registro</title>
+</head>
+
+<body>
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" required><br><br>
+
+        <button type="submit">Iniciar sesión</button>
+    </form>
+
+    <h2>Registro</h2>
+    <form id="register-form">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required><br><br>
+
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" required><br><br>
+
+        <label for="email-reg">Email:</label>
+        <input type="email" id="email-reg" required><br><br>
+
+        <label for="password-reg">Contraseña:</label>
+        <input type="password" id="password-reg" required><br><br>
+
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" required><br><br>
+
+        <button type="submit">Registrarse</button>
+    </form>
+    <h2>Probar Acceso</h2>
+    <button id="admin-btn">Acceder como Admin</button>
+    <button id="user-btn">Acceder como Usuario</button>
+    <p id="admin-response"></p>
+    <script>
+
+        document.getElementById("login-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            fetch("/api/usuario/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        alert("Inicio de sesión exitoso. Token generado.");
+                        sessionStorage.setItem("token", data.token); // <-- usa data.token
+                    } else {
+                        alert("Error al iniciar sesión: " + JSON.stringify(data));
+                    }
+                });
+
+        });
+
+        // REGISTRO
+        document.getElementById("register-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById("nombre").value;
+            const apellido = document.getElementById("apellido").value;
+            const email = document.getElementById("email-reg").value;
+            const password = document.getElementById("password-reg").value;
+            const telefono = document.getElementById("telefono").value;
+
+            fetch("/api/usuario/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nombre, apellido, email, password, telefono })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                })
+                .catch(error => console.error("Error en registro:", error));
+        });
+
+
+
+        document.getElementById("user-btn").addEventListener("click", function () {
+            const token = sessionStorage.getItem("token");
+            if (!token) {
+                alert("Primero inicia sesión para obtener el token.");
+                return;
+            }
+
+            fetch("/api/usuario/user", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+                .then(response => {
+                    if (response.ok) return response.text();
+                    else throw new Error("No autorizado");
+                })
+                .then(data => alert("Respuesta User: " + data))
+                .catch(error => alert("Error: " + error.message));
+        });
+        // ACCEDER COMO ADMIN
+        document.getElementById("admin-btn").addEventListener("click", function () {
+            const token = sessionStorage.getItem("token");
+
+            if (!token) {
+                alert("Debes iniciar sesión primero.");
+                return;
+            }
+
+            fetch("/api/usuario/admin", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById("admin-response").textContent = data;
+                })
+                .catch(error => console.error("Error al acceder como admin:", error));
+        });
+
+
+    </script>
+</body>
+
+</html>
