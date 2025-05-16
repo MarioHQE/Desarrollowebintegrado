@@ -1,15 +1,13 @@
-package com.springboot.desarrolloweb.service;
+package com.springboot.desarrolloweb.service.user;
 
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.springboot.desarrolloweb.DTO.userDTO;
 import com.springboot.desarrolloweb.dao.rolrepository;
 import com.springboot.desarrolloweb.dao.usuariorepository;
@@ -17,11 +15,17 @@ import com.springboot.desarrolloweb.dao.usuariorolrepository;
 import com.springboot.desarrolloweb.entity.rol;
 import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.entity.usuariorol;
+import com.springboot.desarrolloweb.mappers.UsuarioMapper;
 import com.springboot.desarrolloweb.security.jwutil;
-import com.springboot.desarrolloweb.security.userdetailsservice;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class userimpl implements userservice {
+    @Autowired
+    private UsuarioMapper mapper;
+    @Autowired
+    AuthenticationManager authenticationManager;
     @Autowired
     private usuariorepository usuariodao;
     @Autowired
@@ -32,8 +36,6 @@ public class userimpl implements userservice {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private jwutil jwutil;
-    @Autowired
-    private userdetailsservice userdetailsservice;
 
     @Override
     public ResponseEntity<String> signup(Map<String, String> user) {
@@ -90,26 +92,27 @@ public class userimpl implements userservice {
 
     @Override
     public ResponseEntity<String> login(Map<String, String> user) {
-        if (validateaccount(user)) {
-            UserDetails usuario = userdetailsservice.loadUserByUsername(user.get("email"));
-            userDTO userdto = new userDTO(usuariodao.findByEmail(user.get("email")));
-            if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-
-                if (usuario.isEnabled() == true) {
-                    String token = jwutil.createtoken(usuario, userdto);
-                    return new ResponseEntity<String>("{\"token\":\"" + token + "\"}",
-                            HttpStatus.OK);
-                } else {
-                    return ResponseEntity.badRequest().body("Error al iniciar sesion, el usuario no esta habilitado");
-                }
-            } else {
-                return ResponseEntity.ok().body("No esta autenticado");
-            }
-
-        } else {
+        if (!validateaccount(user)) {
             return ResponseEntity.badRequest()
                     .body("Error al iniciar sesion, el usuario no existe o la contraseña es incorrecta");
         }
+        usuario usuario = usuariodao.findByEmail(user.get("email"));
+        userDTO userdto = mapper.usertoDTO(usuario);
+        if (usuario == null) {
+            return ResponseEntity.badRequest()
+                    .body("Error al iniciar sesion, el usuario no existe o la contraseña es incorrecta");
+        }
+
+        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            return ResponseEntity.badRequest().body("Error al iniciar sesion, no se ha autenticado correctamente");
+        }
+        if (!usuario.isEnabled() == true) {
+            return ResponseEntity.badRequest().body("Error al iniciar sesion, el usuario no esta habilitado");
+        }
+
+        String token = jwutil.createtoken(usuario, userdto);
+        return new ResponseEntity<String>("{\"token\":\"" + token + "\"}",
+                HttpStatus.OK);
     }
 
     public boolean validateaccount(Map<String, String> user) {

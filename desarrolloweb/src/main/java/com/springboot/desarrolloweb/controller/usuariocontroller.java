@@ -3,7 +3,9 @@ package com.springboot.desarrolloweb.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.springboot.desarrolloweb.service.userimpl;
+import com.springboot.desarrolloweb.service.user.userimpl;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -15,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/usuario")
+@Slf4j
 public class usuariocontroller {
     @Autowired
     private userimpl userdao;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Map<String, String> entity) {
-        // TODO: process POST request
         return userdao.signup(entity);
     }
 

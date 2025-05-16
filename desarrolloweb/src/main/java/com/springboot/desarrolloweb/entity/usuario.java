@@ -8,7 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,6 +39,10 @@ public class usuario implements UserDetails {
     private String apellido;
     @Column(name = "email")
     private String email;
+    @Column(name = "dni")
+    private String dni;
+    @Column(name = "ciudad")
+    private String ciudad;
     @Column(name = "password")
     private String password;
     @Column(name = "enabled")
@@ -52,7 +55,6 @@ public class usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO Auto-generated method stub
         return usuariorol.stream().map(rol -> (GrantedAuthority) () -> rol.getRol().getNombre()).toList();
     }
 
@@ -63,19 +65,16 @@ public class usuario implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // TODO Auto-generated method stub
         return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // TODO Auto-generated method stub
         return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // TODO Auto-generated method stub
         return UserDetails.super.isCredentialsNonExpired();
     }
 

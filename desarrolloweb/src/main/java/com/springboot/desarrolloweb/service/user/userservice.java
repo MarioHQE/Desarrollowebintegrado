@@ -1,4 +1,4 @@
-package com.springboot.desarrolloweb.service;
+package com.springboot.desarrolloweb.service.user;
 
 import java.util.Map;
 
