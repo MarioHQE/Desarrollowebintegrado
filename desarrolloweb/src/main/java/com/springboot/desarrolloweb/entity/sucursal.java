@@ -28,9 +28,13 @@ public class sucursal {
     private String nombre;
     @Column(name = "direccion")
     private String direccion;
+    @Column(name = "longitud")
+    private double lon;
+    @Column(name = "latitud")
+    private double lat;
     @Column(name = "ciudad")
     private String ciudad;
-    @Column(name = "email")
-    private String email;
+    @Column(name = "codigo_propio", unique = true)
+    private String codigoPropio;
 
 }
