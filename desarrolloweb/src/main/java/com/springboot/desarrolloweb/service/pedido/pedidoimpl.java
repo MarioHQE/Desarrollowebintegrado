@@ -73,7 +73,6 @@ public class pedidoimpl implements pedidoservice {
             pedidoProducto.setCantidad(p.getCantidad());
             pedidoProducto.setSubtotal(productoSucursal.getProducto().getPrecio() * p.getCantidad());
             pedidoProducto.setPedido(nuevo);
-            pedidoProducto.setPedido(nuevo);
             listpedidoproducto.add(pedidoProducto);
         }
         nuevo.setPedidoProducto(listpedidoproducto);
@@ -87,7 +86,7 @@ public class pedidoimpl implements pedidoservice {
         pedido pedidoexistente = pedidorepository.findById(idPedido)
                 .orElseThrow(() -> new RuntimeException("No se encontró el pedido con ID: " + idPedido));
 
-        if (pedido.getEstado() != "PAGADO") {
+        if (!"PAGADO".equals(pedidoexistente.getEstado())) {
             if (pedido.getNombre() != null) {
                 pedidoexistente.setNombre(pedido.getNombre());
             }
