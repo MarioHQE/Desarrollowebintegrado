@@ -33,11 +33,7 @@ public class pedidoproducto {
     private pedido pedido;
     @Column(name = "cantidad")
     private int cantidad;
-    @Column(name = "precio")
-    private double precio;
     @Column(name = "subtotal")
     private double subtotal;
-    @Column(name = "estado")
-    private String estado;
 
 }

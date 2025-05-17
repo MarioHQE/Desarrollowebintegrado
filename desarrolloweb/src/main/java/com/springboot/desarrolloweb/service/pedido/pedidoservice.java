@@ -15,9 +15,9 @@ public interface pedidoservice {
 
     pedido getPedido(int idPedido);
 
-    ResponseEntity<pedido> createPedido(pedidorequest pedido);
+    ResponseEntity<String> createPedido(pedidorequest pedido);
 
-    ResponseEntity<pedido> updatePedido(int idPedido, pedidoupdaterequest pedido);
+    ResponseEntity<String> updatePedido(int idPedido, pedidoupdaterequest pedido);
 
     ResponseEntity<String> deletePedido(int idPedido);
 

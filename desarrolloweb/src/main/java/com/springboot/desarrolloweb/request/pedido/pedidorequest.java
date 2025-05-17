@@ -1,7 +1,11 @@
 package com.springboot.desarrolloweb.request.pedido;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import com.springboot.desarrolloweb.entity.pedidoproducto;
+
+import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -38,7 +42,8 @@ public class pedidorequest {
     @NotEmpty
     private LocalDateTime fechapedido;
     private LocalDateTime fechapago;
-
+    @NonNull
+    private List<pedidoproductorequest> productos;
     private String estado;
 
 }
