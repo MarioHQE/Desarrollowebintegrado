@@ -1,6 +1,5 @@
 package com.springboot.desarrolloweb.request.sucursal;
 
-import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
-import com.springboot.desarrolloweb.dao.productosucursalrepository;
 import com.springboot.desarrolloweb.dao.sucursalrepository;
 import com.springboot.desarrolloweb.entity.sucursal;
 import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
@@ -13,6 +13,7 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class sucursalimpl implements sucursalimplservice {
     @Autowired
     private sucursalrepository sucursalrepository;

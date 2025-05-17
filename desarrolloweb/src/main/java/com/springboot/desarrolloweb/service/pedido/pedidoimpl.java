@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.desarrolloweb.dao.pedidorepository;
@@ -22,6 +23,7 @@ import com.springboot.desarrolloweb.request.pedido.pedidoproductorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
 
+@Service
 public class pedidoimpl implements pedidoservice {
     @Autowired
     productosucursalrepository productosucursalrepository;

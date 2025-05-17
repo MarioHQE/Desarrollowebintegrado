@@ -3,6 +3,7 @@ package com.springboot.desarrolloweb.service.producto;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.request.producto.productorequest;
@@ -10,6 +11,7 @@ import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
 import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 
+@Service
 public interface productoservice {
 
     List<producto> obtenerTodosLosProductos();

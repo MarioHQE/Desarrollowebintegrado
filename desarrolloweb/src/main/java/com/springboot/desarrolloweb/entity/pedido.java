@@ -20,13 +20,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import jakarta.persistence.ForeignKey;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class pedido {
     @Id
@@ -56,7 +57,7 @@ public class pedido {
     @JsonIgnore
     private List<pedidoproducto> pedidoProducto;
     @ManyToOne(optional = true)
-    @JoinColumn(name = "idusuario", nullable = true)
+    @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_usuario"))
     @JsonIgnore
     private usuario usuario;
 }
