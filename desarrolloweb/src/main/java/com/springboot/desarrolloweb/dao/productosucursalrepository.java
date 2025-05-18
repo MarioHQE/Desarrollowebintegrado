@@ -8,11 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.desarrolloweb.entity.ProductoSucursal;
-import com.springboot.desarrolloweb.entity.producto;
 
 @Repository
 public interface productosucursalrepository extends JpaRepository<ProductoSucursal, Integer> {
-    List<producto> findProductosBySucursal(@Param("idSucursal") int idSucursal);
+    List<ProductoSucursal> findProductosBySucursal(@Param("idSucursal") int idSucursal);
 
     Optional<ProductoSucursal> findbyproductoysucursal(@Param("idProducto") int idProducto,
             @Param("idSucursal") int idSucursal);

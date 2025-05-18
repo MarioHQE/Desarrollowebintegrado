@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.request.producto.productorequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
@@ -13,10 +14,11 @@ import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 
 @Service
 public interface productoservice {
+    producto obtenerProductoPorId(int idProducto);
 
     List<producto> obtenerTodosLosProductos();
 
-    List<producto> obtenerProductosPorSucursal(int idSucursal);
+    List<ProductoSucursal> obtenerProductosPorSucursal(int idSucursal);
 
     ResponseEntity<String> guardarproducto(productorequest producto);
 

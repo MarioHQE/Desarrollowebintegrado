@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@NamedQuery(name = "ProductoSucursal.findProductosBySucursal", query = "SELECT ps.producto FROM ProductoSucursal ps WHERE ps.sucursal.idsucursal = :idSucursal")
+@NamedQuery(name = "ProductoSucursal.findProductosBySucursal", query = "SELECT ps FROM ProductoSucursal ps WHERE ps.sucursal.idsucursal = :idSucursal")
 @NamedQuery(name = "ProductoSucursal.findbyproductoysucursal", query = "SELECT ps FROM ProductoSucursal ps WHERE ps.producto.idproducto=:idProducto AND ps.sucursal.idsucursal=:idSucursal")
 public class ProductoSucursal {
 

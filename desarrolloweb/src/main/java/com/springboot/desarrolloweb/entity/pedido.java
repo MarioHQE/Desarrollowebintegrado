@@ -57,7 +57,7 @@ public class pedido {
     @JsonIgnore
     private List<pedidoproducto> pedidoProducto;
     @ManyToOne(optional = true)
-    @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_usuario"))
+    @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_pedido_usuario"))
     @JsonIgnore
     private usuario usuario;
 }
