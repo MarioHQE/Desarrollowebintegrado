@@ -54,7 +54,6 @@ public class pedido {
     private String estado;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnore
     private List<pedidoproducto> pedidoProducto;
     @ManyToOne(optional = true)
     @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_pedido_usuario"))

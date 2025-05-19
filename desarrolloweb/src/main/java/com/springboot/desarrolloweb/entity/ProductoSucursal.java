@@ -5,6 +5,8 @@ import java.util.List;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -36,9 +38,11 @@ public class ProductoSucursal {
     @ManyToOne
     @JoinColumn(name = "idproducto", referencedColumnName = "idproducto", foreignKey = @ForeignKey(name = "fk_producto"))
     private producto producto;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idsucursal", referencedColumnName = "idsucursal", foreignKey = @ForeignKey(name = "fk_sucursal"))
     private sucursal sucursal;
+    @JsonIgnore
     @OneToMany(mappedBy = "productoSucursal")
     private List<pedidoproducto> pedidoProducto;
     @Column(name = "stock")

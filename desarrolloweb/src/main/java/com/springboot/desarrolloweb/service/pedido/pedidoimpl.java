@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -70,6 +72,17 @@ public class pedidoimpl implements pedidoservice {
             ProductoSucursal productoSucursal = productosucursalrepository.findById(p.getIdProductoSucursal())
                     .orElseThrow(() -> new RuntimeException(
                             "No se encontró el producto por sucursal con ID: " + p.getIdProductoSucursal()));
+            if (productoSucursal.getStock() <= p.getCantidad()) {
+                return ResponseEntity.badRequest()
+                        .body("No hay suficiente stock para el producto " + productoSucursal.getProducto().getNombre());
+
+            }
+            if (productoSucursal.getProducto().isEstado() == false) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("El producto " + productoSucursal.getProducto().getNombre() + " esta inactivo");
+
+            }
+
             pedidoProducto.setProductoSucursal(productoSucursal);
 
             pedidoProducto.setCantidad(p.getCantidad());
@@ -123,7 +136,12 @@ public class pedidoimpl implements pedidoservice {
     @Transactional
     public ResponseEntity<String> deletePedido(int idPedido) {
         try {
-            pedidorepository.deleteById(idPedido);
+            pedido pedidoexistente = pedidorepository.findById(idPedido)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el pedido con ID: " + idPedido));
+            if (pedidoexistente.getEstado().equals("PAGADO")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("No se puede eliminar un pedido pagado");
+            }
             return ResponseEntity.ok("Pedido eliminado correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al eliminar el pedido: " + e.getMessage());
