@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
-public class Error {
+public class HandleError {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handlevalidationexception(ConstraintViolationException e) {
