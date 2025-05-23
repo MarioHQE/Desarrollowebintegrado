@@ -8,5 +8,6 @@ public class userDTO {
     private String apellido;
     private String email;
     private String telefono;
+    private String verificationCode;
 
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@NamedQuery(name = "ProductoSucursal.findProductosBySucursal", query = "SELECT ps.producto FROM ProductoSucursal ps WHERE ps.sucursal.idsucursal = :idSucursal")
+@NamedQuery(name = "ProductoSucursal.findProductosBySucursal", query = "SELECT ps FROM ProductoSucursal ps WHERE ps.sucursal.idsucursal = :idSucursal")
 @NamedQuery(name = "ProductoSucursal.findbyproductoysucursal", query = "SELECT ps FROM ProductoSucursal ps WHERE ps.producto.idproducto=:idProducto AND ps.sucursal.idsucursal=:idSucursal")
 public class ProductoSucursal {
 
@@ -36,9 +38,11 @@ public class ProductoSucursal {
     @ManyToOne
     @JoinColumn(name = "idproducto", referencedColumnName = "idproducto", foreignKey = @ForeignKey(name = "fk_producto"))
     private producto producto;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idsucursal", referencedColumnName = "idsucursal", foreignKey = @ForeignKey(name = "fk_sucursal"))
     private sucursal sucursal;
+    @JsonIgnore
     @OneToMany(mappedBy = "productoSucursal")
     private List<pedidoproducto> pedidoProducto;
     @Column(name = "stock")

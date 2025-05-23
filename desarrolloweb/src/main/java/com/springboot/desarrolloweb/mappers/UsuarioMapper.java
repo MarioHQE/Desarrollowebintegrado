@@ -12,6 +12,7 @@ public interface UsuarioMapper {
     @Mapping(target = "apellido", source = "user.apellido")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "telefono", source = "user.telefono")
+    @Mapping(target = "verificationCode", source = "user.verificationCode")
     userDTO usertoDTO(usuario user);
 
 }

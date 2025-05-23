@@ -31,4 +31,10 @@ public class jwutil {
         return user;
     }
 
+    public String getEmail(String token) {
+        String email = (String) Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload()
+                .get("email");
+        return email;
+    }
+
 }

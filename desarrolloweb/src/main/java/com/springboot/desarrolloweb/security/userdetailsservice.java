@@ -16,11 +16,8 @@ public class userdetailsservice implements UserDetailsService {
     usuariorepository userdao;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        usuario user = userdao.findByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " +
-                    username);
-        }
+        usuario user = userdao.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         return new User(user.getEmail(), user.getPassword(), user.getAuthorities());
     }
 

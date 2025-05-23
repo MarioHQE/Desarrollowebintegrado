@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.desarrolloweb.entity.pedido;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
@@ -15,7 +16,7 @@ public interface pedidoservice {
 
     pedido getPedido(int idPedido);
 
-    ResponseEntity<String> createPedido(pedidorequest pedido);
+    ResponseEntity<String> createPedido(pedidorequest pedido) throws JsonProcessingException;
 
     ResponseEntity<String> updatePedido(int idPedido, pedidoupdaterequest pedido);
 

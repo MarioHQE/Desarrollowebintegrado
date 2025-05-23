@@ -2,6 +2,7 @@ package com.springboot.desarrolloweb.request.sucursal;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -9,7 +10,7 @@ public class sucursalrequest {
     @NotBlank
     @NotEmpty
     private String nombre;
-    @NotBlank
+    @NotNull
     @NotEmpty
     private String direccion;
     @NotBlank

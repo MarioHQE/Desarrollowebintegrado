@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,8 +50,9 @@ public class usuario implements UserDetails {
     private boolean enabled;
     @Column(name = "telefono")
     private String telefono;
-
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    @Column(name = "verification_code", nullable = true)
+    private String verificationCode;
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<usuariorol> usuariorol;
 
     @Override

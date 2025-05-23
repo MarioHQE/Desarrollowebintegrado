@@ -5,6 +5,8 @@ import java.util.List;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +25,7 @@ public class categoria {
     private int id;
     @Column(name = "nombre")
     private String name;
+    @JsonIgnore
     @OneToMany(mappedBy = "categoria")
     private List<producto> productos;
 }

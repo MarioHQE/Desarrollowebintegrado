@@ -9,16 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class productorequest {
-    @NotBlank
+    @NotNull
+    @NotEmpty
     private String nombre;
 
-    @NotBlank
+    @NotNull
+    @Size(max = 300)
     private String descripcion;
 
     @PositiveOrZero
     private double precio;
 
-    @NotBlank
+    @NotNull
     private String imagen;
 
     @NotNull

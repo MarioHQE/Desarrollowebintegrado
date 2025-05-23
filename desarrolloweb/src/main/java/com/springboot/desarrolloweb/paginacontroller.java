@@ -15,4 +15,9 @@ public class paginacontroller {
         return "index";
     }
 
+    @GetMapping("/productohtml")
+    public String productohtml() {
+        return "productos";
+    }
+
 }

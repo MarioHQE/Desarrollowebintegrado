@@ -36,10 +36,9 @@ public class productoimpl implements productoservice {
         return productodao.findAll();
     }
 
-    @Override
-    public List<producto> obtenerProductosPorSucursal(int idSucursal) {
-        return productosucursaldoa.findProductosBySucursal(idSucursal);
-
+    public producto obtenerProductoPorId(int idProducto) {
+        return productodao.findById(idProducto).orElseThrow(
+                () -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
     }
 
     @Override
@@ -65,9 +64,14 @@ public class productoimpl implements productoservice {
     @Override
     @Transactional
     public ResponseEntity<String> eliminarproducto(int idProducto) {
-        productodao.findById(idProducto).ifPresentOrElse(producto -> productodao.delete(producto),
-                () -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
-        ;
+        producto productoexistente = productodao.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
+        if (productoexistente.getProductoSucursal().size() > 0) {
+            return new ResponseEntity<>(
+                    "No se puede eliminar el producto, ya que tiene productos por sucursal asociados",
+                    HttpStatus.BAD_REQUEST);
+
+        }
         return ResponseEntity.ok("Producto eliminado correctamente");
 
     }
@@ -100,6 +104,13 @@ public class productoimpl implements productoservice {
 
         productodao.save(productoexistente);
         return ResponseEntity.ok("Producto actualizado correctamente");
+
+    }
+
+    // productosucursal
+    @Override
+    public List<ProductoSucursal> obtenerProductosPorSucursal(int idSucursal) {
+        return productosucursaldoa.findProductosBySucursal(idSucursal);
 
     }
 
@@ -172,8 +183,14 @@ public class productoimpl implements productoservice {
     @Override
     @Transactional
     public ResponseEntity<String> eliminarProductoSucursal(int idProducto, int idSucursal) {
-        productosucursaldoa.delete(productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal")));
+        ProductoSucursal productosucursalexistente = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
+                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
+        if (productosucursalexistente.getPedidoProducto().size() > 0) {
+            return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
+                    HttpStatus.BAD_REQUEST);
+
+        }
+        productosucursaldoa.delete(productosucursalexistente);
         return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
     }
 

@@ -3,6 +3,8 @@ package com.springboot.desarrolloweb.entity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -28,6 +30,7 @@ public class pedidoproducto {
     @ManyToOne
     @JoinColumn(name = "idproductosucursal", referencedColumnName = "idproductosucursal", foreignKey = @ForeignKey(name = "FK_producto_sucursal"))
     private ProductoSucursal productoSucursal;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idpedido", referencedColumnName = "idpedido", foreignKey = @ForeignKey(name = "FK_pedido_producto"))
     private pedido pedido;

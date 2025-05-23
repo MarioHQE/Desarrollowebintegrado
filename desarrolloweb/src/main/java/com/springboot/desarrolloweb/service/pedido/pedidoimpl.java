@@ -3,6 +3,7 @@ package com.springboot.desarrolloweb.service.pedido;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.desarrolloweb.dao.pedidorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
 import com.springboot.desarrolloweb.dao.usuariorepository;
@@ -46,7 +49,7 @@ public class pedidoimpl implements pedidoservice {
 
     @Override
     @Transactional
-    public ResponseEntity<String> createPedido(pedidorequest request) {
+    public ResponseEntity<String> createPedido(pedidorequest request) throws JsonProcessingException {
         pedido nuevo = new pedido();
         List<pedidoproducto> listpedidoproducto = new ArrayList<>();
 
@@ -58,10 +61,11 @@ public class pedidoimpl implements pedidoservice {
         nuevo.setFecha(LocalDateTime.now(ZoneId.of("America/Lima")));
         nuevo.setFechaderecojo(request.getFechaderecojo());
         nuevo.setFechapago(request.getFechapago());
-        nuevo.setEstado(request.getEstado());
+        nuevo.setEstado("PENDIENTE");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            usuario usuario = usuariorepository.findByEmail((String) auth.getPrincipal());
+            usuario usuario = usuariorepository.findByEmail((String) auth.getPrincipal()).orElseThrow(
+                    () -> new RuntimeException("No se encontró el usuario"));
             nuevo.setUsuario(usuario);
         }
 
@@ -70,6 +74,17 @@ public class pedidoimpl implements pedidoservice {
             ProductoSucursal productoSucursal = productosucursalrepository.findById(p.getIdProductoSucursal())
                     .orElseThrow(() -> new RuntimeException(
                             "No se encontró el producto por sucursal con ID: " + p.getIdProductoSucursal()));
+            if (productoSucursal.getStock() <= p.getCantidad()) {
+                return ResponseEntity.badRequest()
+                        .body("No hay suficiente stock para el producto " + productoSucursal.getProducto().getNombre());
+
+            }
+            if (productoSucursal.getProducto().isEstado() == false) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("El producto " + productoSucursal.getProducto().getNombre() + " esta inactivo");
+
+            }
+
             pedidoProducto.setProductoSucursal(productoSucursal);
 
             pedidoProducto.setCantidad(p.getCantidad());
@@ -78,8 +93,13 @@ public class pedidoimpl implements pedidoservice {
             listpedidoproducto.add(pedidoProducto);
         }
         nuevo.setPedidoProducto(listpedidoproducto);
-        pedidorepository.save(nuevo);
-        return ResponseEntity.ok("Pedido creado correctamente");
+        ObjectMapper mapper = new ObjectMapper();
+        HashMap<String, Object> map = new HashMap<>();
+
+        pedido pedidoguardado = pedidorepository.save(nuevo);
+        map.put("idpedido", pedidoguardado.getIdpedido());
+        String json = mapper.writeValueAsString(map);
+        return ResponseEntity.ok(json);
     }
 
     @Override
@@ -123,7 +143,12 @@ public class pedidoimpl implements pedidoservice {
     @Transactional
     public ResponseEntity<String> deletePedido(int idPedido) {
         try {
-            pedidorepository.deleteById(idPedido);
+            pedido pedidoexistente = pedidorepository.findById(idPedido)
+                    .orElseThrow(() -> new RuntimeException("No se encontró el pedido con ID: " + idPedido));
+            if (pedidoexistente.getEstado().equals("PAGADO")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("No se puede eliminar un pedido pagado");
+            }
             return ResponseEntity.ok("Pedido eliminado correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al eliminar el pedido: " + e.getMessage());

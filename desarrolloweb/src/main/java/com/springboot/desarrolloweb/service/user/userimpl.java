@@ -4,8 +4,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.springboot.desarrolloweb.DTO.userDTO;
@@ -35,21 +36,34 @@ public class userimpl implements userservice {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private JavaMailSender mailSender;
+    @Autowired
     private jwutil jwutil;
 
     @Override
     public ResponseEntity<String> signup(Map<String, String> user) {
         user.put("password", passwordEncoder.encode(user.get("password")));
-        if (validatesignup(user)) {
-            if (usuariodao.findByEmail(user.get("email")) != null) {
-                return ResponseEntity.badRequest().body("Error al registrar el usuario, el email ya existe");
-            } else {
-                traerusuario(user);
-                return ResponseEntity.ok("Usuario registrado correctamente");
-            }
-        } else {
+        if (!validatesignup(user)) {
             return ResponseEntity.badRequest().body("Error al registrar el usuario, no se encontro el rol");
         }
+
+        if (usuariodao.findByEmail(user.get("email")) == null) {
+            return ResponseEntity.badRequest().body("Error al registrar el usuario, el email ya existe");
+        }
+
+        traerusuario(user);
+
+        return ResponseEntity.ok("Usuario registrado correctamente");
+
+    }
+
+    private String createverificationcode() {
+        String code = "";
+        for (int i = 0; i < 6; i++) {
+            code += (int) (Math.random() * 10);
+        }
+        return code;
+
     }
 
     private boolean validatesignup(Map<String, String> user) {
@@ -58,7 +72,7 @@ public class userimpl implements userservice {
                 && user.containsKey("telefono");
     }
 
-    public void traerusuario(Map<String, String> user) {
+    public usuario traerusuario(Map<String, String> user) {
         // Buscar el rol ROLE_USER
         rol rol = roldao.findbynombre("ROLE_USER");
 
@@ -77,7 +91,7 @@ public class userimpl implements userservice {
         usuario.setEmail(user.get("email"));
         usuario.setPassword(user.get("password"));
         usuario.setTelefono(user.get("telefono"));
-        usuario.setEnabled(true);
+        usuario.setEnabled(false);
 
         // Crear la relación usuario_rol
         usuariorol ur = new usuariorol();
@@ -85,9 +99,11 @@ public class userimpl implements userservice {
         ur.setRol(rol);
 
         // Agregar el usuarioRol a la lista del usuario
-
-        usuariodao.save(usuario);
+        usuario.setVerificationCode(createverificationcode());
+        usuario usuario2 = usuariodao.save(usuario);
         usuarioroldao.save(ur);
+        return usuario2;
+
     }
 
     @Override
@@ -96,29 +112,32 @@ public class userimpl implements userservice {
             return ResponseEntity.badRequest()
                     .body("Error al iniciar sesion, el usuario no existe o la contraseña es incorrecta");
         }
-        usuario usuario = usuariodao.findByEmail(user.get("email"));
+        usuario usuario = usuariodao.findByEmail(user.get("email"))
+                .orElseThrow(() -> new RuntimeException("User not found"));
         userDTO userdto = mapper.usertoDTO(usuario);
-        if (usuario == null) {
-            return ResponseEntity.badRequest()
-                    .body("Error al iniciar sesion, el usuario no existe o la contraseña es incorrecta");
+        if (!usuario.isEnabled()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Error al iniciar sesion, el usuario no se ha verificado");
         }
-
-        if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-            return ResponseEntity.badRequest().body("Error al iniciar sesion, no se ha autenticado correctamente");
-        }
-        if (!usuario.isEnabled() == true) {
-            return ResponseEntity.badRequest().body("Error al iniciar sesion, el usuario no esta habilitado");
-        }
-
+        enviarverificationcode(userdto);
         String token = jwutil.createtoken(usuario, userdto);
         return new ResponseEntity<String>("{\"token\":\"" + token + "\"}",
                 HttpStatus.OK);
     }
 
+    private void enviarverificationcode(userDTO userdto) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(userdto.getEmail());
+        message.setSubject("Código de verificación");
+        message.setText("Tu código de verificación es: " + userdto.getVerificationCode());
+        mailSender.send(message);
+    }
+
     public boolean validateaccount(Map<String, String> user) {
 
         if (usuariodao.findByEmail(user.get("email")) != null && passwordEncoder.matches(user.get("password"),
-                usuariodao.findByEmail(user.get("email")).getPassword())) {
+                usuariodao.findByEmail(user.get("email")).orElseThrow(() -> new RuntimeException("User not found"))
+                        .getPassword())) {
             return true;
         } else {
             return false;
