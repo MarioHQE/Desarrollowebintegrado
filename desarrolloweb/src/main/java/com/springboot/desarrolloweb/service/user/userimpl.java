@@ -116,10 +116,11 @@ public class userimpl implements userservice {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userDTO userdto = mapper.usertoDTO(usuario);
         if (!usuario.isEnabled()) {
+            enviarverificationcode(userdto);
+
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Error al iniciar sesion, el usuario no se ha verificado");
         }
-        enviarverificationcode(userdto);
         String token = jwutil.createtoken(usuario, userdto);
         return new ResponseEntity<String>("{\"token\":\"" + token + "\"}",
                 HttpStatus.OK);

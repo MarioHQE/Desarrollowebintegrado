@@ -3,6 +3,8 @@ package com.springboot.desarrolloweb.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.springboot.desarrolloweb.mappers.UsuarioMapper;
+import com.springboot.desarrolloweb.mappers.UsuarioMapperImpl;
 import com.springboot.desarrolloweb.service.user.userimpl;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class usuariocontroller {
     @Autowired
     private userimpl userdao;
+    @Autowired
+    private UsuarioMapper mapper;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Map<String, String> entity) {
