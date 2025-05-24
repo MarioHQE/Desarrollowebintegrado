@@ -1,6 +1,9 @@
 package com.springboot.desarrolloweb.service.user;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -146,8 +149,33 @@ public class userimpl implements userservice {
     }
 
     @Override
+    public List<userDTO> obtenerusuarios() {
+        List<usuario> users = usuariodao.findAll();
+
+        return users.stream().map(mapper::usertoDTO).collect(Collectors.toList());
+
+    }
+
+    @Override
     public ResponseEntity<String> logout(Map<String, String> user) {
         return null;
+    }
+
+    @Override
+    public ResponseEntity<String> verificationcode(Map<String, String> reqMap) {
+        String email = reqMap.get("email");
+        String codigo = reqMap.get("code");
+
+        usuario usuario = usuariodao.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!usuario.getVerificationCode().equals(codigo)) {
+            return ResponseEntity.badRequest().body("El código de verificación es incorrecto");
+        }
+        if (usuario.isEnabled()) {
+            return ResponseEntity.ok("El usuario ya se ha verificado");
+        }
+        usuario.setEnabled(true);
+        usuariodao.save(usuario);
+        return ResponseEntity.ok("El usuario se ha verificado correctamente");
     }
 
 }
