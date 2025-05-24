@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +27,10 @@ import com.springboot.desarrolloweb.request.pedido.pedidoproductorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class pedidoimpl implements pedidoservice {
     @Autowired
     productosucursalrepository productosucursalrepository;
@@ -66,7 +68,8 @@ public class pedidoimpl implements pedidoservice {
         nuevo.setEstado("PENDIENTE");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            usuario usuario = usuariorepository.findByEmail((String) auth.getPrincipal()).orElseThrow(
+            log.info("El usuario autenticado es: " + auth.getName());
+            usuario usuario = usuariorepository.findByEmail(auth.getName()).orElseThrow(
                     () -> new RuntimeException("No se encontró el usuario"));
             nuevo.setUsuario(usuario);
         }

@@ -35,7 +35,7 @@ public class SecurityConfig {
                                 .requestMatchers("/index", "/login", "/api/usuario/signup", "/api/usuario/login",
                                         "/productosucursal/**", "/producto/**", "/sucursal/**", "/productohtml",
                                         "/categoria/**", "/pedido/**", "/api/usuario/verificar", "/api/usuario/all",
-                                        "/pago/**")
+                                        "/pago/**", "/pago/url/**")
                                 .permitAll()
                                 .requestMatchers("/api/usuario/user").hasAuthority("ROLE_USER")
                                 .requestMatchers("/api/usuario/admin").hasAuthority("ROLE_ADMIN")
