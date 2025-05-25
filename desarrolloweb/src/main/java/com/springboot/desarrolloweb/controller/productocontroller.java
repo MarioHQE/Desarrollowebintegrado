@@ -28,7 +28,7 @@ public class productocontroller {
     productoservice productoService;
 
     @GetMapping("/all")
-    public List<producto> obtenerproductos(@RequestParam String param) {
+    public List<producto> obtenerproductos() {
         return productoService.obtenerTodosLosProductos();
     }
 

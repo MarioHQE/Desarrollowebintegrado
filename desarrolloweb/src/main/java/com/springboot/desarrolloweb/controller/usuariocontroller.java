@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class usuariocontroller {
     @Autowired
     private userimpl userdao;
-    @Autowired
-    private UsuarioMapper mapper;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Map<String, String> entity) {

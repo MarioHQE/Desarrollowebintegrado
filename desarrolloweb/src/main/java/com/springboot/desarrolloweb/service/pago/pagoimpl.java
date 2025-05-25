@@ -45,8 +45,8 @@ public class pagoimpl implements pagoservice {
                                                                         .setDescription(pp.getProductoSucursal()
                                                                                         .getProducto().getDescripcion())
                                                                         .build())
-                                                        .setUnitAmount((long) pp.getProductoSucursal().getProducto()
-                                                                        .getPrecio() * 100)
+                                                        .setUnitAmount((long) (pp.getProductoSucursal().getProducto()
+                                                                        .getPrecio() * 100))
                                                         .setCurrency("PEN")
 
                                                         .build())

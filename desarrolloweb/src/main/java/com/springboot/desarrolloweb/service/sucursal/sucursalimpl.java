@@ -43,6 +43,8 @@ public class sucursalimpl implements sucursalimplservice {
         sucursal.setNombre(request.getNombre());
         sucursal.setDireccion(request.getDireccion());
         sucursal.setCiudad(request.getCiudad());
+        sucursal.setLat(request.getLat());
+        sucursal.setLon(request.getLon());
         sucursal.setCodigoPropio(codigoGenerado);
 
         sucursalrepository.save(sucursal);
