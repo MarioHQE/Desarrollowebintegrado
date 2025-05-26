@@ -70,6 +70,7 @@ public class productoimpl implements productoservice {
                     HttpStatus.BAD_REQUEST);
 
         }
+        productodao.delete(productoexistente);
         return ResponseEntity.ok("Producto eliminado correctamente");
 
     }
@@ -186,7 +187,6 @@ public class productoimpl implements productoservice {
         if (productosucursalexistente.getPedidoProducto().size() > 0) {
             return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
                     HttpStatus.BAD_REQUEST);
-
         }
         productosucursaldoa.delete(productosucursalexistente);
         return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
