@@ -16,11 +16,13 @@ import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 public interface productoservice {
     producto obtenerProductoPorId(int idProducto);
 
+    List<ProductoSucursal> obtenerproductossucursal();
+
     List<producto> obtenerTodosLosProductos();
 
     List<ProductoSucursal> obtenerProductosPorSucursal(int idSucursal);
 
-    ResponseEntity<String> guardarproducto(productorequest producto);
+    ResponseEntity<String> guardarproducto(productorequest productorequest);
 
     ResponseEntity<String> eliminarproducto(int idProducto);
 

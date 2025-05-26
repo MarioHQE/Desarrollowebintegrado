@@ -1,5 +1,19 @@
-{"properties": [{
-  "name": "stripe.secretkey",
-  "type": "java.lang.String",
-  "description": "A description for 'stripe.secretkey'"
-}]}
+{
+  "properties": [
+    {
+      "name": "stripe.secretkey",
+      "type": "java.lang.String",
+      "description": "A description for 'stripe.secretkey'"
+    },
+    {
+      "name": "aws.s3.acceskey",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.s3.acceskey'"
+    },
+    {
+      "name": "aws.s3.secretkey",
+      "type": "java.lang.String",
+      "description": "A description for 'aws.s3.secretkey'"
+    }
+  ]
+}

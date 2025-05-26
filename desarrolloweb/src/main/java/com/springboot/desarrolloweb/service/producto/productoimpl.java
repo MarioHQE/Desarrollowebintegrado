@@ -1,13 +1,11 @@
 package com.springboot.desarrolloweb.service.producto;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.springboot.desarrolloweb.dao.categoriarepository;
 import com.springboot.desarrolloweb.dao.productorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
@@ -192,6 +190,12 @@ public class productoimpl implements productoservice {
         }
         productosucursaldoa.delete(productosucursalexistente);
         return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
+    }
+
+    @Override
+    public List<ProductoSucursal> obtenerproductossucursal() {
+        // TODO Auto-generated method stub
+        return productosucursaldoa.findAll();
     }
 
 }

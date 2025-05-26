@@ -21,6 +21,7 @@ public class productorequest {
     private double precio;
 
     @NotNull
+    @NotEmpty
     private String imagen;
 
     @NotNull

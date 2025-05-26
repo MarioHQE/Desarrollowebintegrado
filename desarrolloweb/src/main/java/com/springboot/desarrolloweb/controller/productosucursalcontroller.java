@@ -12,6 +12,8 @@ import com.springboot.desarrolloweb.request.producto.productosucursalupdatereque
 import com.springboot.desarrolloweb.service.producto.productoservice;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/productosucursal")
@@ -19,6 +21,11 @@ public class productosucursalcontroller {
 
     @Autowired
     private productoservice productoService;
+
+    @GetMapping("/all")
+    public List<ProductoSucursal> obtenerProductossucursal() {
+        return productoService.obtenerproductossucursal();
+    }
 
     /**
      * Obtiene todos los productos de una sucursal específica

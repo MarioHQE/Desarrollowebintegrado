@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.desarrolloweb.DTO.userDTO;
-import com.springboot.desarrolloweb.mappers.UsuarioMapper;
 import com.springboot.desarrolloweb.service.user.userimpl;
 
 import lombok.extern.slf4j.Slf4j;
