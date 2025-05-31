@@ -188,6 +188,13 @@ public class productoimpl implements productoservice {
             return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
                     HttpStatus.BAD_REQUEST);
         }
+        if (productosucursalexistente.getPedidoProducto().stream()
+                .anyMatch(t -> t.getPedido().getEstado().equals("Pendiente"))) {
+            return new ResponseEntity<>(
+                    "No se puede eliminar el producto por sucursal, ya que tiene pedidos pendientes asociados",
+                    HttpStatus.BAD_REQUEST);
+        }
+
         productosucursaldoa.delete(productosucursalexistente);
         return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
     }
