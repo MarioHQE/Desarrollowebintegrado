@@ -21,6 +21,8 @@ import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.entity.usuariorol;
 import com.springboot.desarrolloweb.mappers.UsuarioMapper;
 import com.springboot.desarrolloweb.security.jwutil;
+
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -44,6 +46,7 @@ public class userimpl implements userservice {
     private jwutil jwutil;
 
     @Override
+    @Transactional
     public ResponseEntity<String> signup(Map<String, String> user) {
         user.put("password", passwordEncoder.encode(user.get("password")));
         if (!validatesignup(user)) {
@@ -78,9 +81,12 @@ public class userimpl implements userservice {
     public usuario traerusuario(Map<String, String> user) {
         // Buscar el rol ROLE_USER
         rol rol = roldao.findbynombre("ROLE_USER");
-
+        rol roladmin = roldao.findbynombre("ROLE_ADMIN");
         if (rol == null) {
             // Si no existe, lo crea
+            roladmin = new rol();
+            roladmin.setNombre("ROLE_ADMIN");
+            roldao.save(roladmin);
             rol = new rol();
             rol.setNombre("ROLE_USER");
             roldao.save(rol);

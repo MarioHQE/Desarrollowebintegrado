@@ -201,7 +201,6 @@ public class productoimpl implements productoservice {
 
     @Override
     public List<ProductoSucursal> obtenerproductossucursal() {
-        // TODO Auto-generated method stub
         return productosucursaldoa.findAll();
     }
 
