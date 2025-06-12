@@ -11,10 +11,16 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.desarrolloweb.dao.pedidorepository;
+import com.springboot.desarrolloweb.dao.productosucursalrepository;
+import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.entity.pedido;
 import com.stripe.Stripe;
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Event;
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
+import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.param.checkout.SessionCreateParams.LineItem;
 import com.stripe.param.checkout.SessionCreateParams.Mode;
@@ -28,6 +34,9 @@ public class pagoimpl implements pagoservice {
         String secretkey;
         @Autowired
         pedidorepository pedidodao;
+
+        @Autowired
+        productosucursalrepository productosucursaldao;
 
         @Override
         public ResponseEntity<String> sesiondepago(int id_pedido) throws StripeException, JsonProcessingException {
@@ -68,6 +77,25 @@ public class pagoimpl implements pagoservice {
                 ObjectMapper mapper = new ObjectMapper();
                 String json = mapper.writeValueAsString(session.getUrl());
                 return ResponseEntity.ok().body(json);
+        }
+
+        public ResponseEntity<String> webhook(String signHeader, String payload) {
+                Stripe.apiKey = secretkey;
+                String endpoint = "a";
+                Event event;
+
+                try {
+                        event = Webhook.constructEvent(payload, signHeader, endpoint);
+                        if (event.getType().equals("checkout.session.completed")) {
+
+                        }
+                        return ResponseEntity.ok().body("Evento no manejado: " + event.getType());
+                } catch (SignatureVerificationException e) {
+                        e.printStackTrace();
+                }
+                return ResponseEntity.badRequest()
+                                .body("Error al procesar el webhook: ");
+
         }
 
 }

@@ -47,5 +47,7 @@ public class ProductoSucursal {
     private List<pedidoproducto> pedidoProducto;
     @Column(name = "stock")
     private int stock;
+    @Column(name = "stock_reservado", columnDefinition = "int default 0")
+    private int stockReservado;
 
 }

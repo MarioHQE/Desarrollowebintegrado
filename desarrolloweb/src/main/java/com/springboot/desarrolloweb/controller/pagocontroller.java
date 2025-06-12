@@ -1,6 +1,7 @@
 package com.springboot.desarrolloweb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,17 +12,31 @@ import com.stripe.exception.StripeException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/pago")
 public class pagocontroller {
+    @Value("${stripe.secretkey}")
+    String secretkey;
     @Autowired
     pagoimpl pagoservice;
 
     @GetMapping("/url/{idpedido}")
     public ResponseEntity<String> conseguirurl(@PathVariable(name = "idpedido") int idpedido)
             throws StripeException, JsonProcessingException {
+
         return pagoservice.sesiondepago(idpedido);
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<String> StripeWebhook(@RequestParam(name = "Stripe-Signature") String SignHeader,
+            @RequestBody String payload)
+            throws JsonProcessingException, StripeException {
+
+        return pagoservice.webhook(SignHeader, payload);
     }
 
 }
