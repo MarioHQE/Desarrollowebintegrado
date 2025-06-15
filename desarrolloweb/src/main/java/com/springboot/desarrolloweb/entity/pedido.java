@@ -55,4 +55,6 @@ public class pedido {
     @ManyToOne(optional = true)
     @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_pedido_usuario"))
     private usuario usuario;
+    @Column(name = "stock_procesado", columnDefinition = "boolean default false")
+    private boolean stockProcesado;
 }

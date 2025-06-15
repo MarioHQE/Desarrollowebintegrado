@@ -10,4 +10,7 @@ import com.stripe.exception.StripeException;
 public interface pagoservice {
     public ResponseEntity<String> sesiondepago(int idpedido) throws StripeException, JsonProcessingException;
 
+    public ResponseEntity<String> webhook(String payload, String sigHeader)
+            throws JsonProcessingException, StripeException;
+
 }

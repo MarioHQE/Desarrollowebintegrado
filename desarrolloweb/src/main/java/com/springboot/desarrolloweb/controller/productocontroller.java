@@ -9,6 +9,9 @@ import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.request.producto.productorequest;
 import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 import com.springboot.desarrolloweb.service.producto.productoservice;
+
+import jakarta.annotation.security.RolesAllowed;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +36,7 @@ public class productocontroller {
         return productoService.obtenerProductoPorId(idProducto);
     }
 
+    @RolesAllowed("ADMIN")
     @PutMapping("/update/{idproducto}")
     public ResponseEntity<String> actualizarproducto(@PathVariable(name = "idproducto") int idproducto,
             @RequestBody productoupdaterequest request) {
@@ -40,11 +44,13 @@ public class productocontroller {
         return productoService.actualizarproducto(idproducto, request);
     }
 
+    @RolesAllowed("ADMIN")
     @PostMapping("/save")
     public ResponseEntity<String> guardarproducto(@RequestBody productorequest request) {
         return productoService.guardarproducto(request);
     }
 
+    @RolesAllowed("ADMIN")
     @DeleteMapping("/delete/{idProducto}")
     public ResponseEntity<String> eliminarproducto(@PathVariable int idProducto) {
         return productoService.eliminarproducto(idProducto);
