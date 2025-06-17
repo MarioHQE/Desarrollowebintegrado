@@ -31,13 +31,13 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.cors(t -> t.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/pago/webhook").disable())
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers("/index", "/login", "/api/usuario/signup", "/api/usuario/login",
                                         "/productosucursal/**", "/producto/**", "/sucursal/**", "/productohtml",
                                         "/categoria/**", "/pedido/**", "/api/usuario/verificar", "/api/usuario/all",
-                                        "/pago/**", "/pago/url/**", "/pedido/update/**")
+                                        "/pago/**", "/pago/url/**", "/pedido/update/**", "/pago/webhook")
                                 .permitAll()
                                 .requestMatchers("/api/usuario/user").hasAuthority("ROLE_USER")
                                 .requestMatchers("/api/usuario/admin").hasAuthority("ROLE_ADMIN")
@@ -52,6 +52,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedOrigin("http://127.0.0.1:*"); // Para Stripe CLI
+        configuration.addAllowedOrigin("https://api.stripe.com"); // Para Stripe
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

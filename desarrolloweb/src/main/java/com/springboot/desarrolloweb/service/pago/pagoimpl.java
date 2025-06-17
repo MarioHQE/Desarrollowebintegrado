@@ -34,8 +34,8 @@ public class pagoimpl implements pagoservice {
         @Value("${stripe.secretkey}")
         String secretkey;
 
-        @Value("${stripe.webhook.secret:whsec_test_secret}")
-        String webhookSecret;
+        // @Value("${stripe.webhook.secret}")
+        String webhookSecret = "whsec_0413b21f46b91831209ef4ada5ff08fd7428b314238748ae2a4819d5dad629a4";
 
         @Autowired
         pedidorepository pedidodao;
@@ -113,14 +113,11 @@ public class pagoimpl implements pagoservice {
                         switch (event.getType()) {
                                 case "checkout.session.completed":
                                         Session session = (Session) event.getDataObjectDeserializer()
-                                                        .getObject()
-                                                        .orElseThrow(() -> new RuntimeException(
-                                                                        "Error al deserializar el objeto de sesión"));
-
+                                                        .getObject().get();
                                         // Obtener el ID del pedido desde los metadatos
-                                        String pedidoIdStr = session.getPaymentIntentObject().getMetadata()
+                                        String pedidoIdStr = session.getMetadata()
                                                         .get("pedido_id");
-
+                                        log.info("Pedido ID: " + pedidoIdStr);
                                         if (pedidoIdStr == null) {
                                                 // Intentar obtener desde la sesión directamente
                                                 PaymentIntent paymentIntent = PaymentIntent
@@ -176,9 +173,7 @@ public class pagoimpl implements pagoservice {
                                         // Evento alternativo que también indica pago exitoso
                                         PaymentIntent succeededIntent = (PaymentIntent) event
                                                         .getDataObjectDeserializer()
-                                                        .getObject()
-                                                        .orElseThrow(() -> new RuntimeException(
-                                                                        "Error al deserializar PaymentIntent"));
+                                                        .getObject().get();
 
                                         String succeededPedidoIdStr = succeededIntent.getMetadata().get("pedido_id");
 
@@ -192,11 +187,8 @@ public class pagoimpl implements pagoservice {
 
                                 case "checkout.session.expired":
                                         // La sesión de pago expiró sin completarse
-                                        Session expiredSession = (Session) event.getDataObjectDeserializer()
-                                                        .getObject()
-                                                        .orElseThrow(() -> new RuntimeException(
-                                                                        "Error al deserializar sesión expirada"));
-
+                                        PaymentIntent expiredSession = (PaymentIntent) event.getDataObjectDeserializer()
+                                                        .getObject().get();
                                         log.info("Sesión de pago expirada: " + expiredSession.getId());
                                         // Podrías implementar lógica para liberar el stock reservado
                                         // después de cierto tiempo si el pedido sigue pendiente
