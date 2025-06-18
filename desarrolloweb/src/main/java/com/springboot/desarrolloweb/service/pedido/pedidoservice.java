@@ -22,6 +22,6 @@ public interface pedidoservice {
 
     ResponseEntity<String> deletePedido(int idPedido);
 
-    pedido pedidobyusuario(String email);
+    List<pedido> pedidobyusuario(String email);
 
 }

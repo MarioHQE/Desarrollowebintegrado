@@ -28,7 +28,11 @@ public class filter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        String requestPath = request.getServletPath();
+        if (isSwaggerPath(requestPath)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (request.getHeader("Authorization") != null && request.getHeader("Authorization").startsWith("Bearer ")) {
             String token = request.getHeader("Authorization").substring(7);
             if (token != null && !token.isEmpty()
@@ -44,5 +48,13 @@ public class filter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isSwaggerPath(String path) {
+        return path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui") ||
+                path.equals("/swagger-ui.html") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars");
     }
 }

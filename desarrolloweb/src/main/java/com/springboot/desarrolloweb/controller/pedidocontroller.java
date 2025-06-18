@@ -35,6 +35,12 @@ public class pedidocontroller {
         return pedidoimpl.getPedidos();
     }
 
+    @GetMapping("/{email}")
+    public List<pedido> getPedidosbyemail(@PathVariable("email") String email) {
+        return pedidoimpl.pedidobyusuario(email);
+
+    }
+
     @GetMapping("/pedido")
     public pedido pedido(@RequestParam(name = "idpedido") int idpedido) {
         return pedidoimpl.getPedido(idpedido);

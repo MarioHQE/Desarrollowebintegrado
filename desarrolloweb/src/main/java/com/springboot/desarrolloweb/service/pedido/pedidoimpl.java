@@ -204,7 +204,7 @@ public class pedidoimpl implements pedidoservice {
 
         try {
             pedidorepository.save(pedidoexistente);
-            return ResponseEntity.ok("Pedido actualizado correctamente");
+            return ResponseEntity.ok().body("Pedido actualizado correctamente");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al actualizar el pedido: " + e.getMessage());
         }
@@ -291,11 +291,8 @@ public class pedidoimpl implements pedidoservice {
     }
 
     @Override
-    public pedido pedidobyusuario(String email) {
-        return pedidorepository.findAll().stream()
-                .filter((pedido) -> pedido.getEmail().equals(email) ||
-                        (pedido.getUsuario() != null && pedido.getUsuario().getEmail().equals(email)))
-                .findFirst().orElseThrow(() -> new RuntimeException("No se encontró el pedido con email: " + email));
+    public List<pedido> pedidobyusuario(String email) {
+        return pedidorepository.findbyusuario(email);
     }
 
     // Método para procesar el pago desde el webhook de Stripe
@@ -351,4 +348,5 @@ public class pedidoimpl implements pedidoservice {
             return ResponseEntity.badRequest().body("Error al marcar como entregado: " + e.getMessage());
         }
     }
+
 }
