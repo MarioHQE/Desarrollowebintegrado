@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.springboot.desarrolloweb.DTO.pedidopersonaldto;
 import com.springboot.desarrolloweb.entity.pedido;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
@@ -36,7 +37,7 @@ public class pedidocontroller {
     }
 
     @GetMapping("/{email}")
-    public List<pedido> getPedidosbyemail(@PathVariable("email") String email) {
+    public List<pedidopersonaldto> getPedidosbyemail(@PathVariable("email") String email) {
         return pedidoimpl.pedidobyusuario(email);
 
     }

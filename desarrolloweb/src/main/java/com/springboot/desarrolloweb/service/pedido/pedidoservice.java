@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.springboot.desarrolloweb.DTO.pedidopersonaldto;
 import com.springboot.desarrolloweb.entity.pedido;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
@@ -22,6 +23,6 @@ public interface pedidoservice {
 
     ResponseEntity<String> deletePedido(int idPedido);
 
-    List<pedido> pedidobyusuario(String email);
+    List<pedidopersonaldto> pedidobyusuario(String email);
 
 }

@@ -6,6 +6,9 @@ import java.util.List;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,6 +59,7 @@ public class pedido {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<pedidoproducto> pedidoProducto;
     @ManyToOne(optional = true)
+
     @JoinColumn(name = "idusuario", nullable = true, referencedColumnName = "idusuario", foreignKey = @ForeignKey(name = "fk_pedido_usuario"))
     private usuario usuario;
     @Column(name = "stock_procesado", columnDefinition = "boolean default false")

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.desarrolloweb.DTO.pedidopersonaldto;
 import com.springboot.desarrolloweb.dao.pedidorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
 import com.springboot.desarrolloweb.dao.usuariorepository;
@@ -23,6 +24,7 @@ import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.entity.pedido;
 import com.springboot.desarrolloweb.entity.pedidoproducto;
 import com.springboot.desarrolloweb.entity.usuario;
+import com.springboot.desarrolloweb.mappers.pedidomapper;
 import com.springboot.desarrolloweb.request.pedido.pedidoproductorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidorequest;
 import com.springboot.desarrolloweb.request.pedido.pedidoupdaterequest;
@@ -38,7 +40,8 @@ public class pedidoimpl implements pedidoservice {
     pedidorepository pedidorepository;
     @Autowired
     usuariorepository usuariorepository;
-
+    @Autowired
+    pedidomapper mapper;
     // Estados del pedido
     private static final String ESTADO_PENDIENTE = "PENDIENTE";
     private static final String ESTADO_PAGADO = "PAGADO";
@@ -291,8 +294,10 @@ public class pedidoimpl implements pedidoservice {
     }
 
     @Override
-    public List<pedido> pedidobyusuario(String email) {
-        return pedidorepository.findbyusuario(email);
+    public List<pedidopersonaldto> pedidobyusuario(String email) {
+
+        return mapper.pedidotopedidopersonaldtoList(pedidorepository.findbyusuario(email));
+
     }
 
     // Método para procesar el pago desde el webhook de Stripe
