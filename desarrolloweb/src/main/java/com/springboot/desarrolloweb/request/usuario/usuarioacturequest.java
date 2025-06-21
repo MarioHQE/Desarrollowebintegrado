@@ -19,4 +19,9 @@ public class usuarioacturequest {
     @NotBlank(message = "El teléfono es obligatorio")
     @Pattern(regexp = "^9\\d{8}$", message = "El teléfono debe empezar con 9 y tener 9 dígitos")
     private String telefono;
+
+    private String ciudad;
+
+    @Pattern(regexp = "^\\d{8}$", message = "El DNI debe tener exactamente 8 dígitos")
+    private String dni;
 }

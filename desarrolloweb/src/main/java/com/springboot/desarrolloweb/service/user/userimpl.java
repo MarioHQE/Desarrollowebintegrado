@@ -196,6 +196,10 @@ public class userimpl implements userservice {
             usuario.setEmail(usuariorequest.getEmail());
         } else if (usuariorequest.getTelefono() != null) {
             usuario.setTelefono(usuariorequest.getTelefono());
+        } else if (usuariorequest.getCiudad() != null) {
+            usuario.setCiudad(usuariorequest.getCiudad());
+        } else if (usuariorequest.getDni() != null) {
+            usuario.setDni(usuariorequest.getDni());
         } else {
             return ResponseEntity.badRequest().body("No se proporcionaron datos para actualizar");
         }
