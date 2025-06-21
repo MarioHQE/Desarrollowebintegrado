@@ -20,6 +20,7 @@ import com.springboot.desarrolloweb.entity.rol;
 import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.entity.usuariorol;
 import com.springboot.desarrolloweb.mappers.UsuarioMapper;
+import com.springboot.desarrolloweb.request.usuario.usuarioacturequest;
 import com.springboot.desarrolloweb.security.jwutil;
 
 import jakarta.transaction.Transactional;
@@ -182,6 +183,25 @@ public class userimpl implements userservice {
         usuario.setEnabled(true);
         usuariodao.save(usuario);
         return ResponseEntity.ok("El usuario se ha verificado correctamente");
+    }
+
+    @Override
+    public ResponseEntity<String> actualizarperfil(usuarioacturequest usuariorequest, int id_usuario) {
+        usuario usuario = usuariodao.findById(id_usuario).orElseThrow(() -> new RuntimeException("User not found"));
+        if (usuariorequest.getNombre() != null) {
+            usuario.setNombre(usuariorequest.getNombre().trim());
+        } else if (usuariorequest.getApellido() != null) {
+            usuario.setApellido(usuariorequest.getApellido());
+        } else if (usuariorequest.getEmail() != null) {
+            usuario.setEmail(usuariorequest.getEmail());
+        } else if (usuariorequest.getTelefono() != null) {
+            usuario.setTelefono(usuariorequest.getTelefono());
+        } else {
+            return ResponseEntity.badRequest().body("No se proporcionaron datos para actualizar");
+        }
+
+        usuariodao.save(usuario);
+        return ResponseEntity.ok("El perfil se ha actualizado correctamente");
     }
 
 }

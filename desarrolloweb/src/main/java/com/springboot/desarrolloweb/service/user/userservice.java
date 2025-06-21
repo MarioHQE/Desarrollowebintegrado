@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.springboot.desarrolloweb.DTO.userDTO;
+import com.springboot.desarrolloweb.request.usuario.usuarioacturequest;
 
 @Service
 public interface userservice {
@@ -19,5 +20,7 @@ public interface userservice {
     public List<userDTO> obtenerusuarios();
 
     public ResponseEntity<String> verificationcode(Map<String, String> reqMap);
+
+    public ResponseEntity<String> actualizarperfil(usuarioacturequest usuariorequest, int id_usuario);
 
 }

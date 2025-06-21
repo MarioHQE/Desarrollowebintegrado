@@ -26,4 +26,4 @@ public interface pedidomapper {
 
     List<pedidopersonaldto> pedidotopedidopersonaldtoList(List<pedido> pedido);
 
-}
+    }
