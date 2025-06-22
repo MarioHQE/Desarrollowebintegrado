@@ -37,14 +37,14 @@ public class ProductoSucursal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idproductosucursal")
     private int idProductoSucursal;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idproducto", referencedColumnName = "idproducto", foreignKey = @ForeignKey(name = "fk_producto"))
     private producto producto;
     @ManyToOne
     @JoinColumn(name = "idsucursal", referencedColumnName = "idsucursal", foreignKey = @ForeignKey(name = "fk_sucursal"))
     private sucursal sucursal;
     @JsonIgnore
-    @OneToMany(mappedBy = "productoSucursal", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productoSucursal", fetch = FetchType.EAGER)
     private List<pedidoproducto> pedidoProducto;
     @Column(name = "stock")
     private int stock;

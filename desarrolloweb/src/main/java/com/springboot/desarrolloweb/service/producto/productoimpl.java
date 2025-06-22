@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.springboot.desarrolloweb.controller.productosucursalcontroller;
 import com.springboot.desarrolloweb.dao.categoriarepository;
 import com.springboot.desarrolloweb.dao.productorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
@@ -67,11 +69,23 @@ public class productoimpl implements productoservice {
     public ResponseEntity<String> eliminarproducto(int idProducto) {
         producto productoexistente = productodao.findById(idProducto)
                 .orElseThrow(() -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
-        if (productoexistente.getProductoSucursal().size() > 0) {
-            return new ResponseEntity<>(
-                    "No se puede eliminar el producto, ya que tiene productos por sucursal asociados",
-                    HttpStatus.BAD_REQUEST);
+        if (productoexistente.getProductoSucursal().size() > 0 && !(productoexistente.getProductoSucursal().stream()
+                .map(t -> t.getPedidoProducto().stream().anyMatch(t1 -> t1.getPedido().getEstado().equals("PENDIENTE")))
+                .anyMatch(t -> t))) {
+            boolean tienepedidopagadosinentregar = productoexistente.getProductoSucursal().stream().map(
+                    t -> t.getPedidoProducto().stream().anyMatch(t1 -> t1.getPedido().getEstado().equals("PAGADO")))
+                    .anyMatch(t -> t);
+            if (tienepedidopagadosinentregar) {
+                return new ResponseEntity<>("No se puede eliminar el producto, ya que tiene pedidos pagados en entrega",
+                        HttpStatus.BAD_REQUEST);
 
+            }
+            return new ResponseEntity<>("No se puede eliminar el producto, ya que tiene asociaciones",
+                    HttpStatus.BAD_REQUEST);
+        }
+        for (ProductoSucursal productosuc : productoexistente.getProductoSucursal()) {
+
+            eliminarProductoSucursal(productoexistente.getIdproducto(), productosuc.getSucursal().getIdsucursal());
         }
         productodao.delete(productoexistente);
         return ResponseEntity.ok("Producto eliminado correctamente");

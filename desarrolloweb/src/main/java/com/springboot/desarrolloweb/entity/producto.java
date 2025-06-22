@@ -50,6 +50,6 @@ public class producto {
     private boolean estado;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
     private List<ProductoSucursal> productoSucursal;
 }
