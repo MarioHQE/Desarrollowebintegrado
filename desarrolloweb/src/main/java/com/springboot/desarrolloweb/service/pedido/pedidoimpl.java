@@ -196,7 +196,6 @@ public class pedidoimpl implements pedidoservice {
             if (pedido.getEstado() != null && ESTADO_CANCELADO.equals(pedido.getEstado())) {
                 if (ESTADO_PENDIENTE.equals(estadoAnterior)) {
                     log.info("Procesando cancelación de pedido: " + idPedido);
-                    liberarStockReservado(pedidoexistente);
                     pedidoexistente.setEstado(ESTADO_CANCELADO);
                 } else {
                     return ResponseEntity.badRequest()
@@ -282,9 +281,6 @@ public class pedidoimpl implements pedidoservice {
             }
 
             // Liberar stock reservado si está pendiente
-            if (ESTADO_PENDIENTE.equals(pedidoexistente.getEstado())) {
-                liberarStockReservado(pedidoexistente);
-            }
 
             pedidorepository.delete(pedidoexistente);
             return ResponseEntity.ok("Pedido eliminado correctamente");
