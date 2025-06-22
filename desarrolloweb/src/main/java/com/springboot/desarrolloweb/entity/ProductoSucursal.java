@@ -38,7 +38,6 @@ public class ProductoSucursal {
     @ManyToOne
     @JoinColumn(name = "idproducto", referencedColumnName = "idproducto", foreignKey = @ForeignKey(name = "fk_producto"))
     private producto producto;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idsucursal", referencedColumnName = "idsucursal", foreignKey = @ForeignKey(name = "fk_sucursal"))
     private sucursal sucursal;

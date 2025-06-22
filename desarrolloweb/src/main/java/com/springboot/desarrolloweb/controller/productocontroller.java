@@ -32,72 +32,69 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "Productos", description = "API para la gestión de productos")
 public class productocontroller {
 
-    @Autowired
-    productoservice productoService;
+        @Autowired
+        productoservice productoService;
 
-    @Operation(summary = "Obtener todos los productos", description = "Retorna una lista de todos los productos disponibles en el sistema")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = producto.class)))
-    })
-    @GetMapping("/all")
-    public List<producto> obtenerproductos() {
-        return productoService.obtenerTodosLosProductos();
-    }
+        @Operation(summary = "Obtener todos los productos", description = "Retorna una lista de todos los productos disponibles en el sistema")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = producto.class)))
+        })
+        @GetMapping("/all")
+        public List<producto> obtenerproductos() {
+                return productoService.obtenerTodosLosProductos();
+        }
 
-    @Operation(summary = "Obtener producto por ID", description = "Retorna un producto específico basado en su ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Producto encontrado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = producto.class))),
-            @ApiResponse(responseCode = "404", description = "Producto no encontrado", content = @Content)
-    })
-    @GetMapping("/{idProducto}")
-    public producto obtenerproducto(
-            @Parameter(description = "ID del producto a buscar", required = true) @PathVariable int idProducto) {
-        return productoService.obtenerProductoPorId(idProducto);
-    }
+        @Operation(summary = "Obtener producto por ID", description = "Retorna un producto específico basado en su ID")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Producto encontrado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = producto.class))),
+                        @ApiResponse(responseCode = "404", description = "Producto no encontrado", content = @Content)
+        })
+        @GetMapping("/{idProducto}")
+        public producto obtenerproducto(
+                        @Parameter(description = "ID del producto a buscar", required = true) @PathVariable int idProducto) {
+                return productoService.obtenerProductoPorId(idProducto);
+        }
 
-    @Operation(summary = "Actualizar producto", description = "Actualiza un producto existente (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN"),
-            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
-    })
-    @RolesAllowed("ADMIN")
-    @PutMapping("/update/{idproducto}")
-    public ResponseEntity<String> actualizarproducto(
-            @Parameter(description = "ID del producto a actualizar", required = true) @PathVariable(name = "idproducto") int idproducto,
-            @Parameter(description = "Datos del producto a actualizar", required = true) @RequestBody productoupdaterequest request) {
+        @Operation(summary = "Actualizar producto", description = "Actualiza un producto existente (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Producto actualizado exitosamente"),
+                        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+                        @ApiResponse(responseCode = "401", description = "No autorizado"),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN"),
+                        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+        })
+        @PutMapping("/update/{idproducto}")
+        public ResponseEntity<String> actualizarproducto(
+                        @Parameter(description = "ID del producto a actualizar", required = true) @PathVariable(name = "idproducto") int idproducto,
+                        @Parameter(description = "Datos del producto a actualizar", required = true) @RequestBody productoupdaterequest request) {
 
-        return productoService.actualizarproducto(idproducto, request);
-    }
+                return productoService.actualizarproducto(idproducto, request);
+        }
 
-    @Operation(summary = "Crear nuevo producto", description = "Crea un nuevo producto en el sistema (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Producto creado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN")
-    })
-    @RolesAllowed("ADMIN")
-    @PostMapping("/save")
-    public ResponseEntity<String> guardarproducto(
-            @Parameter(description = "Datos del nuevo producto", required = true) @RequestBody productorequest request) {
-        return productoService.guardarproducto(request);
-    }
+        @Operation(summary = "Crear nuevo producto", description = "Crea un nuevo producto en el sistema (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Producto creado exitosamente"),
+                        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+                        @ApiResponse(responseCode = "401", description = "No autorizado"),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN")
+        })
+        @PostMapping("/save")
+        public ResponseEntity<String> guardarproducto(
+                        @Parameter(description = "Datos del nuevo producto", required = true) @RequestBody productorequest request) {
+                return productoService.guardarproducto(request);
+        }
 
-    @Operation(summary = "Eliminar producto", description = "Elimina un producto del sistema (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Producto eliminado exitosamente"),
-            @ApiResponse(responseCode = "400", description = "No se puede eliminar el producto (tiene asociaciones)"),
-            @ApiResponse(responseCode = "401", description = "No autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN"),
-            @ApiResponse(responseCode = "404", description = "Producto no encontrado")
-    })
-    @RolesAllowed("ADMIN")
-    @DeleteMapping("/delete/{idProducto}")
-    public ResponseEntity<String> eliminarproducto(
-            @Parameter(description = "ID del producto a eliminar", required = true) @PathVariable int idProducto) {
-        return productoService.eliminarproducto(idProducto);
-    }
+        @Operation(summary = "Eliminar producto", description = "Elimina un producto del sistema (Requiere rol ADMIN)", security = @SecurityRequirement(name = "Bearer Authentication"))
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "Producto eliminado exitosamente"),
+                        @ApiResponse(responseCode = "400", description = "No se puede eliminar el producto (tiene asociaciones)"),
+                        @ApiResponse(responseCode = "401", description = "No autorizado"),
+                        @ApiResponse(responseCode = "403", description = "Acceso denegado - Se requiere rol ADMIN"),
+                        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+        })
+        @DeleteMapping("/delete/{idProducto}")
+        public ResponseEntity<String> eliminarproducto(
+                        @Parameter(description = "ID del producto a eliminar", required = true) @PathVariable int idProducto) {
+                return productoService.eliminarproducto(idProducto);
+        }
 }

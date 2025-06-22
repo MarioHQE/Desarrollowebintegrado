@@ -17,7 +17,7 @@ public class pedidopersonaldto {
     LocalDateTime fechaderecojo;
     LocalDateTime fecha;
     LocalDateTime fechapago;
-    boolean estado;
+    String estado;
     List<pedidoproducto> pedidoProducto;
     private UsuarioDTO usuario;
 

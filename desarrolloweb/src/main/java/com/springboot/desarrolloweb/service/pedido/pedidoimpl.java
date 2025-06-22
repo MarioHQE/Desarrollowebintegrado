@@ -103,7 +103,7 @@ public class pedidoimpl implements pedidoservice {
 
             if (productoSucursal.getProducto().isEstado() == false) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("El producto " + productoSucursal.getProducto().getNombre() + " está inactivo");
+                        .body("El producto " + productoSucursal.getProducto().getNombre() + " no esta disponible");
             }
 
             // SOLO reservar el stock, mantenerlo reservado hasta la entrega

@@ -43,7 +43,6 @@ public class producto {
     @Column(name = "imagen")
     private String imagen;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "idcategoria", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_categoria_producto"))
     private categoria categoria;

@@ -42,8 +42,8 @@ public class pedidocontroller {
 
     }
 
-    @GetMapping("/pedido")
-    public pedido pedido(@RequestParam(name = "idpedido") int idpedido) {
+    @GetMapping("/pedido/{idpedido}")
+    public pedido pedido(@PathVariable(name = "idpedido") int idpedido) {
         return pedidoimpl.getPedido(idpedido);
     }
 
@@ -53,7 +53,6 @@ public class pedidocontroller {
     }
 
     @RolesAllowed("ADMIN")
-    @Secured({ "ROLE_ADMIN" })
     @PutMapping("/update/{idpedido}")
     public ResponseEntity<String> putMethodName(@PathVariable("idpedido") int idpedido,
             @RequestBody pedidoupdaterequest request) {
