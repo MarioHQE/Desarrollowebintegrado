@@ -68,8 +68,8 @@ public class productosucursalcontroller {
      * @param idSucursal ID de la sucursal
      * @return Mensaje de confirmación
      */
-    @DeleteMapping("/eliminar")
-    public ResponseEntity<String> eliminarProductoSucursal(@RequestParam int idProducto, @RequestParam int idSucursal) {
+    @DeleteMapping("/eliminar/{idProducto}/{idSucursal}")
+    public ResponseEntity<String> eliminarProductoSucursal(@PathVariable int idProducto, @PathVariable int idSucursal) {
         return productoService.eliminarProductoSucursal(idProducto, idSucursal);
     }
 

@@ -7,8 +7,10 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,7 +44,7 @@ public class ProductoSucursal {
     @JoinColumn(name = "idsucursal", referencedColumnName = "idsucursal", foreignKey = @ForeignKey(name = "fk_sucursal"))
     private sucursal sucursal;
     @JsonIgnore
-    @OneToMany(mappedBy = "productoSucursal")
+    @OneToMany(mappedBy = "productoSucursal", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<pedidoproducto> pedidoProducto;
     @Column(name = "stock")
     private int stock;

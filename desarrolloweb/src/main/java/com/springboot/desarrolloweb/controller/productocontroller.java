@@ -1,17 +1,10 @@
 package com.springboot.desarrolloweb.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.request.producto.productorequest;
 import com.springboot.desarrolloweb.request.producto.productoupdaterequest;

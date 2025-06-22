@@ -18,7 +18,10 @@ import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
 import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class productoimpl implements productoservice {
     @Autowired
     private productorepository productodao;
@@ -116,8 +119,7 @@ public class productoimpl implements productoservice {
     @Override
     @Transactional
     public ResponseEntity<String> actualizarStock(int idProducto, int idSucursal, int stock) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
+        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
         productoSucursal.setStock(stock);
         productosucursaldoa.save(productoSucursal);
         return ResponseEntity.ok("Stock actualizado correctamente");
@@ -126,8 +128,7 @@ public class productoimpl implements productoservice {
 
     @Override
     public Integer disminuirStock(int idProducto, int idSucursal, int stockdisminuido) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
+        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
         Integer stockActualizado = productoSucursal.getStock() - stockdisminuido;
         productoSucursal.setStock(stockActualizado);
         productosucursaldoa.save(productoSucursal);
@@ -136,8 +137,7 @@ public class productoimpl implements productoservice {
 
     @Override
     public Integer aumentarStock(int idProducto, int idSucursal, int stockaumentado) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
+        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
         Integer stockActualizado = productoSucursal.getStock() + stockaumentado;
         productoSucursal.setStock(stockActualizado);
         productosucursaldoa.save(productoSucursal);
@@ -182,20 +182,21 @@ public class productoimpl implements productoservice {
     @Override
     @Transactional
     public ResponseEntity<String> eliminarProductoSucursal(int idProducto, int idSucursal) {
-        ProductoSucursal productosucursalexistente = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal)
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
+        ProductoSucursal productosucursalexistente = productosucursaldoa.findbyproductoysucursal(idProducto,
+                idSucursal);
+
         if (productosucursalexistente.getPedidoProducto().size() > 0) {
             return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
                     HttpStatus.BAD_REQUEST);
         }
         if (productosucursalexistente.getPedidoProducto().stream()
-                .anyMatch(t -> t.getPedido().getEstado().equals("Pendiente"))) {
+                .anyMatch(t -> t.getPedido().getEstado().equals("PENDIENTE"))) {
             return new ResponseEntity<>(
                     "No se puede eliminar el producto por sucursal, ya que tiene pedidos pendientes asociados",
                     HttpStatus.BAD_REQUEST);
         }
-
-        productosucursaldoa.delete(productosucursalexistente);
+        log.info("Producto por sucursal eliminado: " + productosucursalexistente.getIdProductoSucursal());
+        productosucursaldoa.deleteById(productosucursalexistente.getIdProductoSucursal());
         return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
     }
 
