@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
-import com.springboot.desarrolloweb.service.producto.productoservice;
+import com.springboot.desarrolloweb.service.producto.productosucursalservice;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class productosucursalcontroller {
 
     @Autowired
-    private productoservice productoService;
+    private productosucursalservice productoService;
 
     @GetMapping("/all")
     public List<ProductoSucursal> obtenerProductossucursal() {

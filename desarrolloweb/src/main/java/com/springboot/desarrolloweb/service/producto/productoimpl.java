@@ -1,23 +1,24 @@
 package com.springboot.desarrolloweb.service.producto;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.springboot.desarrolloweb.controller.productosucursalcontroller;
 import com.springboot.desarrolloweb.dao.categoriarepository;
 import com.springboot.desarrolloweb.dao.productorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
-import com.springboot.desarrolloweb.dao.sucursalrepository;
 import com.springboot.desarrolloweb.entity.ProductoSucursal;
 import com.springboot.desarrolloweb.entity.categoria;
 import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.request.producto.productorequest;
-import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
-import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
 import com.springboot.desarrolloweb.request.producto.productoupdaterequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 public class productoimpl implements productoservice {
     @Autowired
     private productorepository productodao;
-    @Autowired
-    private productosucursalrepository productosucursaldoa;
-    @Autowired
-    private sucursalrepository sucursaldao;
+
     @Autowired
     private categoriarepository categoriarepository;
+    @Autowired
+    private productosucursalrepository productosucursaldao;
 
     @Override
     public List<producto> obtenerTodosLosProductos() {
@@ -66,34 +66,6 @@ public class productoimpl implements productoservice {
 
     @Override
     @Transactional
-    public ResponseEntity<String> eliminarproducto(int idProducto) {
-        producto productoexistente = productodao.findById(idProducto)
-                .orElseThrow(() -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
-        if (productoexistente.getProductoSucursal().size() > 0 && !(productoexistente.getProductoSucursal().stream()
-                .map(t -> t.getPedidoProducto().stream().anyMatch(t1 -> t1.getPedido().getEstado().equals("PENDIENTE")))
-                .anyMatch(t -> t))) {
-            boolean tienepedidopagadosinentregar = productoexistente.getProductoSucursal().stream().map(
-                    t -> t.getPedidoProducto().stream().anyMatch(t1 -> t1.getPedido().getEstado().equals("PAGADO")))
-                    .anyMatch(t -> t);
-            if (tienepedidopagadosinentregar) {
-                return new ResponseEntity<>("No se puede eliminar el producto, ya que tiene pedidos pagados en entrega",
-                        HttpStatus.BAD_REQUEST);
-
-            }
-            return new ResponseEntity<>("No se puede eliminar el producto, ya que tiene asociaciones",
-                    HttpStatus.BAD_REQUEST);
-        }
-        for (ProductoSucursal productosuc : productoexistente.getProductoSucursal()) {
-
-            eliminarProductoSucursal(productoexistente.getIdproducto(), productosuc.getSucursal().getIdsucursal());
-        }
-        productodao.delete(productoexistente);
-        return ResponseEntity.ok("Producto eliminado correctamente");
-
-    }
-
-    @Override
-    @Transactional
     public ResponseEntity<String> actualizarproducto(int idProducto, productoupdaterequest request) {
         producto productoexistente = productodao.findById(idProducto)
                 .orElseThrow(() -> new RuntimeException("No se encontró el producto con ID: " + idProducto));
@@ -123,100 +95,122 @@ public class productoimpl implements productoservice {
 
     }
 
-    // productosucursal
-    @Override
-    public List<ProductoSucursal> obtenerProductosPorSucursal(int idSucursal) {
-        return productosucursaldoa.findProductosBySucursal(idSucursal);
-
-    }
-
     @Override
     @Transactional
-    public ResponseEntity<String> actualizarStock(int idProducto, int idSucursal, int stock) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
-        productoSucursal.setStock(stock);
-        productosucursaldoa.save(productoSucursal);
-        return ResponseEntity.ok("Stock actualizado correctamente");
+    public ResponseEntity<String> eliminarproducto(int idProducto) {
+        producto productoexistente = productodao.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        // Obtener estados de pedidos
+        List<String> estados = productoexistente.getProductoSucursal().stream()
+                .flatMap(ps -> ps.getPedidoProducto().stream())
+                .map(pedidoprod -> pedidoprod.getPedido().getEstado())
+                .distinct()
+                .collect(Collectors.toList());
+
+        log.info("Producto {}: Estados encontrados: {}", idProducto, estados);
+
+        // CASO 1: Sin pedidos - Eliminación física
+        if (estados.isEmpty()) {
+            List<ProductoSucursal> productosucursal = productoexistente.getProductoSucursal();
+            productosucursal.forEach(productoSucursal -> productosucursaldao.delete(productoSucursal));
+            productodao.deleteById(idProducto);
+            return ResponseEntity.ok("✅ Producto eliminado físicamente correctamente");
+        }
+
+        // Definir conjuntos de estados
+        Set<String> estadosActivos = Set.of("PENDIENTE", "PAGADO", "PREPARANDO", "LISTO_PARA_RECOGER");
+        Set<String> estadosCompletados = Set.of("ENTREGADO", "CANCELADO"); // ✅ Definir aquí para usar en verificaciones
+
+        // CASO 2: Verificar pedidos activos (PRIORIDAD MÁXIMA - NO eliminar)
+        boolean tienePedidosActivos = estados.stream().anyMatch(estadosActivos::contains);
+        if (tienePedidosActivos) {
+            return estadosactivos(estados, productoexistente, idProducto, estadosActivos);
+        }
+
+        // CASO 3: Verificar pedidos completados (eliminación lógica)
+        // ✅ CORRECCIÓN: Verificar contra estadosCompletados, no estadosActivos
+        boolean tienePedidosCompletados = estados.stream().anyMatch(estadosCompletados::contains);
+        if (tienePedidosCompletados) {
+            return estadoscompletados(estados, productoexistente, idProducto, estadosCompletados); // ✅ AGREGAR RETURN
+        }
+
+        // CASO 4: Estados no reconocidos
+        // ✅ CORRECCIÓN: Filtrar correctamente estados no reconocidos
+        List<String> estadosNoReconocidos = estados.stream()
+                .filter(estado -> !estadosActivos.contains(estado) && !estadosCompletados.contains(estado))
+                .collect(Collectors.toList());
+
+        if (!estadosNoReconocidos.isEmpty()) {
+            return estadosnoreconocidos(estadosNoReconocidos, estadosActivos, estadosCompletados, idProducto);
+        }
+
+        // CASO 5: Fallback (no debería llegar aquí)
+        log.error("Caso no contemplado para producto {}, estados: {}", idProducto, estados);
+        return ResponseEntity.badRequest()
+                .body("❌ Error interno: caso de eliminación no contemplado");
+    }
+
+    private ResponseEntity<String> estadosactivos(List<String> estados, producto productoexistente, int idProducto,
+            Set<String> estadosactivos) {
+
+        List<String> estadosActivosEncontrados = estados.stream()
+                .filter(estadosactivos::contains)
+                .collect(Collectors.toList());
+        long cantidaddepedidosactivos = productoexistente.getProductoSucursal().stream().flatMap(prodsuc -> prodsuc
+                .getPedidoProducto().stream().map(pedidoprod -> pedidoprod.getPedido().getEstado())
+                .filter(estadosactivos::contains))
+                .count();
+
+        log.warn("Intento de eliminar producto {} con pedidos activos: {}",
+                idProducto, estadosActivosEncontrados);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(String.format("❌ No se puede eliminar el producto. " +
+                        "Tiene %d pedidos activos con estados: %s",
+                        cantidaddepedidosactivos,
+                        String.join(", ", estadosActivosEncontrados)));
 
     }
 
-    @Override
-    public Integer disminuirStock(int idProducto, int idSucursal, int stockdisminuido) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
-        Integer stockActualizado = productoSucursal.getStock() - stockdisminuido;
-        productoSucursal.setStock(stockActualizado);
-        productosucursaldoa.save(productoSucursal);
-        return stockActualizado;
+    private ResponseEntity<String> estadoscompletados(List<String> estados, producto productoexistente,
+            int idProducto, Set<String> estadosCompletados) {
+        List<String> estadosCompletadosEncontrados = estados.stream()
+                .filter(estadosCompletados::contains)
+                .collect(Collectors.toList());
+
+        long cantidadPedidosCompletados = productoexistente.getProductoSucursal().stream()
+                .flatMap(ps -> ps.getPedidoProducto().stream())
+                .map(pp -> pp.getPedido().getEstado())
+                .filter(estadosCompletados::contains)
+                .count();
+
+        // Aplicar eliminación lógica
+        eliminadologico(productoexistente);
+        productodao.save(productoexistente);
+
+        log.info("Producto {} eliminado lógicamente con {} pedidos completados: {}",
+                idProducto, cantidadPedidosCompletados, estadosCompletadosEncontrados);
+
+        return ResponseEntity.ok(String.format(
+                "✅ Producto eliminado lógicamente. Historial preservado (%d pedidos completados)",
+                cantidadPedidosCompletados));
     }
 
-    @Override
-    public Integer aumentarStock(int idProducto, int idSucursal, int stockaumentado) {
-        ProductoSucursal productoSucursal = productosucursaldoa.findbyproductoysucursal(idProducto, idSucursal);
-        Integer stockActualizado = productoSucursal.getStock() + stockaumentado;
-        productoSucursal.setStock(stockActualizado);
-        productosucursaldoa.save(productoSucursal);
-        return stockActualizado;
+    private ResponseEntity<String> estadosnoreconocidos(List<String> estadosNoReconocidos,
+            Set<String> estadosActivos,
+            Set<String> estadosCompletados,
+            int idProducto) {
+        log.error("Estados no reconocidos en producto {}: {}", idProducto, estadosNoReconocidos);
+        return ResponseEntity.badRequest()
+                .body("❌ Estados de pedidos no reconocidos: " + String.join(", ", estadosNoReconocidos));
     }
 
-    @Override
-    public ResponseEntity<String> agregarProductoSucursal(productosucursalrequest productosucursalrequest) {
-        ProductoSucursal productoSucursal = new ProductoSucursal();
-        productoSucursal.setStock(productosucursalrequest.getStock());
-        productoSucursal.setProducto(productodao.findById(productosucursalrequest.getProducto()).get());
-        productoSucursal.setSucursal(sucursaldao.findById(productosucursalrequest.getSucursal()).get());
-        productosucursaldoa.save(productoSucursal);
-        return ResponseEntity.ok("Producto agregado correctamente");
+    private void eliminadologico(producto productoexistente) {
+        productoexistente.setEliminado(true);
+        productoexistente.setEstado(false);
+        productoexistente.setFechaEliminacion(LocalDateTime.now(ZoneId.of("America/Lima")));
 
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<String> actualizarProductoSucursal(productosucursalupdaterequest productosucursalrequest) {
-        ProductoSucursal productoSucursal = productosucursaldoa
-                .findById(productosucursalrequest.getIdproductosucursal())
-                .orElseThrow(() -> new RuntimeException("No se encuentra el producto por sucursal"));
-        if (productosucursalrequest.getStock() != null) {
-            productoSucursal.setStock(productosucursalrequest.getStock());
-        }
-        if (productosucursalrequest.getProducto() != null) {
-            productoSucursal.setProducto(productodao.findById(productosucursalrequest.getProducto()).get());
-        }
-        if (productosucursalrequest.getSucursal() != null) {
-            productoSucursal.setSucursal(sucursaldao.findById(productosucursalrequest.getSucursal()).get());
-        }
-        try {
-            productosucursaldoa.save(productoSucursal);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error al actualizar el producto por sucursal", HttpStatus.BAD_REQUEST);
-
-        }
-        return new ResponseEntity<>("Producto actualizado correctamente", HttpStatus.OK);
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<String> eliminarProductoSucursal(int idProducto, int idSucursal) {
-        ProductoSucursal productosucursalexistente = productosucursaldoa.findbyproductoysucursal(idProducto,
-                idSucursal);
-
-        if (productosucursalexistente.getPedidoProducto().size() > 0) {
-            return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
-                    HttpStatus.BAD_REQUEST);
-        }
-        if (productosucursalexistente.getPedidoProducto().stream()
-                .anyMatch(t -> t.getPedido().getEstado().equals("PENDIENTE"))) {
-            return new ResponseEntity<>(
-                    "No se puede eliminar el producto por sucursal, ya que tiene pedidos pendientes asociados",
-                    HttpStatus.BAD_REQUEST);
-        }
-        log.info("Producto por sucursal eliminado: " + productosucursalexistente.getIdProductoSucursal());
-        productosucursaldoa.deleteById(productosucursalexistente.getIdProductoSucursal());
-        return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
-    }
-
-    @Override
-    public List<ProductoSucursal> obtenerproductossucursal() {
-        return productosucursaldoa.findAll();
     }
 
 }

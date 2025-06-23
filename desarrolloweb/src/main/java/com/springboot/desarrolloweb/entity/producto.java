@@ -1,5 +1,6 @@
 package com.springboot.desarrolloweb.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -48,7 +49,12 @@ public class producto {
     private categoria categoria;
     @Column(name = "estado")
     private boolean estado;
-
+    @Column(name = "eliminado", columnDefinition = "boolean default false")
+    private boolean eliminado;
+    @Column(name = "fecha_eliminacion")
+    private LocalDateTime fechaEliminacion;
+    @Column(name = "motivo_eliminacion")
+    private String motivoEliminacion;
     @JsonIgnore
     @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
     private List<ProductoSucursal> productoSucursal;
