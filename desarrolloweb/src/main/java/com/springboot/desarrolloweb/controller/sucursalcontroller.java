@@ -42,7 +42,7 @@ public class sucursalcontroller {
         return sucursalimplservice.saveSucursal(request);
     }
 
-    @PutMapping("/update/{idsucursal}")
+    @PutMapping("/update/{idSucursal}")
     public ResponseEntity<String> updatesucursal(@PathVariable("idSucursal") int idsucursal,
             @RequestBody sucursalupdaterequest request) {
 

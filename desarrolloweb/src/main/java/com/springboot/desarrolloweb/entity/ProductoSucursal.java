@@ -1,5 +1,6 @@
 package com.springboot.desarrolloweb.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -10,6 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -46,9 +49,24 @@ public class ProductoSucursal {
     @JsonIgnore
     @OneToMany(mappedBy = "productoSucursal", fetch = FetchType.EAGER)
     private List<pedidoproducto> pedidoProducto;
-    @Column(name = "stock")
+    @Column(name = "activo", columnDefinition = "boolean default true")
+    private boolean activo;
+    @Column(name = "eliminado", columnDefinition = "boolean default false")
+    private boolean eliminado;
+    @Column(name = "fecha_eliminacion")
+    private LocalDateTime fechaEliminacion;
+    @Column(name = "motivo_eliminacion")
+    private String motivoEliminacion;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado")
+    private estado estado;
+    @Column(name = "stock", columnDefinition = "int default 0")
     private int stock;
     @Column(name = "stock_reservado", columnDefinition = "int default 0")
     private int stockReservado;
 
+    public static enum estado {
+        ACTIVO, INACTIVO, ELIMINADO;
+
+    }
 }

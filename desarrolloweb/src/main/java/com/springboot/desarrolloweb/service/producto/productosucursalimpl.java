@@ -1,6 +1,10 @@
 package com.springboot.desarrolloweb.service.producto;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +16,7 @@ import com.springboot.desarrolloweb.dao.productorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
 import com.springboot.desarrolloweb.dao.sucursalrepository;
 import com.springboot.desarrolloweb.entity.ProductoSucursal;
+import com.springboot.desarrolloweb.entity.ProductoSucursal.estado;
 import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
 
@@ -26,6 +31,8 @@ public class productosucursalimpl implements productosucursalservice {
     private productosucursalrepository productosucursaldoa;
     @Autowired
     private sucursalrepository sucursaldao;
+    Set<String> estadosActivos = Set.of("PENDIENTE", "PAGADO", "PREPARANDO", "LISTO_PARA_RECOGER");
+    Set<String> estadosCompletados = Set.of("ENTREGADO", "CANCELADO");
 
     @Override
     public List<ProductoSucursal> obtenerProductosPorSucursal(int idSucursal) {
@@ -102,22 +109,72 @@ public class productosucursalimpl implements productosucursalservice {
         ProductoSucursal productosucursalexistente = productosucursaldoa.findbyproductoysucursal(idProducto,
                 idSucursal);
 
-        if (productosucursalexistente.getPedidoProducto().size() > 0) {
-            return new ResponseEntity<>("No se puede eliminar el producto por sucursal, ya que tiene pedidos asociados",
-                    HttpStatus.BAD_REQUEST);
+        if (productosucursalexistente == null) {
+            return new ResponseEntity<>("No se encuentra el producto por sucursal", HttpStatus.NOT_FOUND);
         }
-        if (productosucursalexistente.getPedidoProducto().stream()
-                .anyMatch(t -> t.getPedido().getEstado().equals("PENDIENTE"))) {
-            return new ResponseEntity<>(
-                    "No se puede eliminar el producto por sucursal, ya que tiene pedidos pendientes asociados",
-                    HttpStatus.BAD_REQUEST);
+        if (productosucursalexistente.isEliminado()) {
+            return new ResponseEntity<>("El producto por sucursal ya fue eliminado", HttpStatus.BAD_REQUEST);
         }
-        log.info("Producto por sucursal eliminado: " + productosucursalexistente.getIdProductoSucursal());
-        productosucursaldoa.deleteById(productosucursalexistente.getIdProductoSucursal());
-        return ResponseEntity.ok("Producto por sucursal eliminado correctamente");
+
+        boolean tienepedidos = productosucursalexistente.getPedidoProducto() != null
+                && productosucursalexistente.getPedidoProducto().size() > 0;
+        if (tienepedidos) {
+
+            Set<String> EstadosEncontrados = productosucursalexistente.getPedidoProducto()
+                    .stream()
+                    .map(pp -> pp.getPedido().getEstado())
+                    .collect(Collectors.toSet());
+            boolean tieneAlgunPedidoActivo = EstadosEncontrados.stream()
+                    .anyMatch(estadosActivos::contains);
+            if (tieneAlgunPedidoActivo) {
+                return estadoactivosevent(productosucursalexistente, EstadosEncontrados);
+            }
+            boolean todosPedidosCompletados = EstadosEncontrados.stream()
+                    .allMatch(estadosCompletados::contains);
+            if (todosPedidosCompletados) {
+                return estadocompletadoevent(productosucursalexistente, EstadosEncontrados);
+            }
+
+        } else {
+            productosucursaldoa.delete(productosucursalexistente);
+            return new ResponseEntity<>("Producto eliminado correctamente", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("No se puede eliminar el producto", HttpStatus.BAD_REQUEST);
+
     }
 
-    @Override
+    public void eliminadologico(ProductoSucursal productosucursalexistente) {
+        productosucursalexistente.setEliminado(true);
+        productosucursalexistente.setEstado(estado.ELIMINADO);
+        productosucursalexistente.setFechaEliminacion(LocalDateTime.now(ZoneId.of("America/Lima")));
+
+    }
+
+    public ResponseEntity<String> estadoactivosevent(ProductoSucursal productoSucursal, Set<String> totalactivos) {
+        int totalactivossize = totalactivos.size();
+        long totalpedidos = productoSucursal.getPedidoProducto().stream().map(pedidoprod -> pedidoprod.getPedido())
+                .count();
+        String nombredeproducto = productoSucursal.getProducto().getNombre();
+        String mensaje = String.format("El producto %s tiene %d pedidos activos y tiene %d pedidos ", nombredeproducto,
+                totalactivossize, totalpedidos);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
+    }
+
+    public ResponseEntity<String> estadocompletadoevent(ProductoSucursal productoSucursal,
+            Set<String> totalcompletados) {
+        int totalcompletadossize = totalcompletados.size();
+        long totalpedidos = productoSucursal.getPedidoProducto().stream().map(pedidoprod -> pedidoprod.getPedido())
+                .count();
+        String nombredeproducto = productoSucursal.getProducto().getNombre();
+        eliminadologico(productoSucursal);
+        String mensaje = String.format(
+                "El producto %s se ha eliminado lógicamente. tiene %d pedidos completados y tiene %d pedidos ",
+                nombredeproducto,
+                totalcompletadossize, totalpedidos);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(mensaje);
+
+    }
+
     public List<ProductoSucursal> obtenerproductossucursal() {
         return productosucursaldoa.findAll();
     }
