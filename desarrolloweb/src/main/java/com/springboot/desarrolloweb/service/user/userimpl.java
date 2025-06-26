@@ -54,7 +54,7 @@ public class userimpl implements userservice {
             return ResponseEntity.badRequest().body("Error al registrar el usuario, no se encontro el rol");
         }
 
-        if (usuariodao.findByEmail(user.get("email")) == null) {
+        if (usuariodao.findByEmail(user.get("email")) != null) {
             return ResponseEntity.badRequest().body("Error al registrar el usuario, el email ya existe");
         }
 
