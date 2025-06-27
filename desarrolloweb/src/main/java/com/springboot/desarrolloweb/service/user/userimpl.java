@@ -49,12 +49,13 @@ public class userimpl implements userservice {
     @Override
     @Transactional
     public ResponseEntity<String> signup(Map<String, String> user) {
+        usuario usuario = usuariodao.findByEmail(user.get("email")).orElse(null);
         user.put("password", passwordEncoder.encode(user.get("password")));
         if (!validatesignup(user)) {
             return ResponseEntity.badRequest().body("Error al registrar el usuario, no se encontro el rol");
         }
 
-        if (usuariodao.findByEmail(user.get("email")) != null) {
+        if (usuario != null) {
             return ResponseEntity.badRequest().body("Error al registrar el usuario, el email ya existe");
         }
 
