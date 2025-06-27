@@ -18,7 +18,7 @@ public class pedidopersonaldto {
     LocalDateTime fecha;
     LocalDateTime fechapago;
     String estado;
-    List<pedidoproducto> pedidoProducto;
+    List<ProductoInfoDTO> pedidoProducto;
     private UsuarioDTO usuario;
 
     @Data

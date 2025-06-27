@@ -16,6 +16,7 @@ import com.springboot.desarrolloweb.dao.productorepository;
 import com.springboot.desarrolloweb.dao.productosucursalrepository;
 import com.springboot.desarrolloweb.dao.sucursalrepository;
 import com.springboot.desarrolloweb.entity.ProductoSucursal;
+import com.springboot.desarrolloweb.entity.producto;
 import com.springboot.desarrolloweb.entity.ProductoSucursal.estado;
 import com.springboot.desarrolloweb.request.producto.productosucursalrequest;
 import com.springboot.desarrolloweb.request.producto.productosucursalupdaterequest;
@@ -71,6 +72,27 @@ public class productosucursalimpl implements productosucursalservice {
     @Override
     public ResponseEntity<String> agregarProductoSucursal(productosucursalrequest productosucursalrequest) {
         ProductoSucursal productoSucursal = new ProductoSucursal();
+        producto producto = productodao.findById(productosucursalrequest.getProducto()).orElseThrow();
+        boolean ya_existe = productosucursaldoa.findbyproductoysucursal(productosucursalrequest.getProducto(),
+                productosucursalrequest.getSucursal()) != null ? true : false;
+        ProductoSucursal productoSucursalExistente = productosucursaldoa.findbyproductoysucursal(
+                productosucursalrequest.getProducto(),
+                productosucursalrequest.getSucursal());
+        if (ya_existe) {
+            if (!productoSucursalExistente.isEliminado()) {
+                return new ResponseEntity<>("El producto ya existe y esta activo", HttpStatus.BAD_REQUEST);
+            } else {
+                productoSucursalExistente.setEliminado(false);
+                productoSucursalExistente.setActivo(true);
+                productoSucursalExistente.setEstado(ProductoSucursal.estado.ACTIVO);
+                productoSucursalExistente.setStock(productosucursalrequest.getStock());
+                productoSucursalExistente.setFechaEliminacion(null);
+                productoSucursalExistente.setMotivoEliminacion(null);
+                productosucursaldoa.save(productoSucursalExistente);
+                return ResponseEntity.ok("Producto reactivado denuevo");
+            }
+        }
+
         productoSucursal.setStock(productosucursalrequest.getStock());
         productoSucursal.setProducto(productodao.findById(productosucursalrequest.getProducto()).get());
         productoSucursal.setSucursal(sucursaldao.findById(productosucursalrequest.getSucursal()).get());
@@ -144,6 +166,8 @@ public class productosucursalimpl implements productosucursalservice {
     }
 
     public void eliminadologico(ProductoSucursal productosucursalexistente) {
+        ;
+        productosucursalexistente.setActivo(false);
         productosucursalexistente.setEliminado(true);
         productosucursalexistente.setEstado(estado.ELIMINADO);
         productosucursalexistente.setFechaEliminacion(LocalDateTime.now(ZoneId.of("America/Lima")));
