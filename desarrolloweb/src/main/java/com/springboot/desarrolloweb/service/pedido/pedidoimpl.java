@@ -105,6 +105,10 @@ public class pedidoimpl implements pedidoservice {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("El producto " + productoSucursal.getProducto().getNombre() + " no esta disponible");
             }
+            if (productoSucursal.isActivo() == false) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("El producto " + productoSucursal.getProducto().getNombre() + " no esta activo");
+            }
 
             // SOLO reservar el stock, mantenerlo reservado hasta la entrega
             productosucursalrepository.save(productoSucursal);
@@ -291,8 +295,8 @@ public class pedidoimpl implements pedidoservice {
 
     @Override
     public List<pedidopersonaldto> pedidobyusuario(String email) {
-
-        return mapper.pedidotopedidopersonaldtoList(pedidorepository.findbyusuario(email));
+        List<pedido> pedido = pedidorepository.findbyusuario(email);
+        return mapper.pedidotopedidopersonaldtoList(pedido);
 
     }
 

@@ -82,6 +82,7 @@ public class productosucursalimpl implements productosucursalservice {
             if (!productoSucursalExistente.isEliminado()) {
                 return new ResponseEntity<>("El producto ya existe y esta activo", HttpStatus.BAD_REQUEST);
             } else {
+
                 productoSucursalExistente.setEliminado(false);
                 productoSucursalExistente.setActivo(true);
                 productoSucursalExistente.setEstado(ProductoSucursal.estado.ACTIVO);
@@ -92,7 +93,7 @@ public class productosucursalimpl implements productosucursalservice {
                 return ResponseEntity.ok("Producto reactivado denuevo");
             }
         }
-
+        productoSucursal.setActivo(true);
         productoSucursal.setStock(productosucursalrequest.getStock());
         productoSucursal.setProducto(productodao.findById(productosucursalrequest.getProducto()).get());
         productoSucursal.setSucursal(sucursaldao.findById(productosucursalrequest.getSucursal()).get());
