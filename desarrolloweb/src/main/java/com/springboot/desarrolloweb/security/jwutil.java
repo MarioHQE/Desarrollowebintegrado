@@ -20,6 +20,8 @@ public class jwutil {
 
     public String createtoken(UserDetails user, userDTO userdto) {
         String token = Jwts.builder().claims().subject(user.getUsername()).add("idusuario", userdto.getId())
+                .add("nombre", userdto.getNombre()).add("apellido", userdto.getApellido())
+                .add("telefono", userdto.getTelefono())
                 .add("rol", user.getAuthorities())
                 .add("email", userdto.getEmail()).add("telefono", userdto.getTelefono())
                 .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)).and()
