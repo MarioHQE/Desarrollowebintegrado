@@ -42,7 +42,7 @@ public class categoriacontroller {
         return categoriaimpl.crearcategoria(request);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{idcategoria}")
     public ResponseEntity<String> actualizar(@PathVariable("idcategoria") int idcategoria,
             @RequestBody categoriaupdaterequest request) {
 
