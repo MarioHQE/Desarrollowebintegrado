@@ -8,6 +8,7 @@ import com.springboot.desarrolloweb.entity.usuario;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
+    @Mapping(target = "id", source = "user.idusuario")
     @Mapping(target = "nombre", source = "user.nombre")
     @Mapping(target = "apellido", source = "user.apellido")
     @Mapping(target = "email", source = "user.email")

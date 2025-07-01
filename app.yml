@@ -60,6 +60,7 @@ spec:
   - port: 3600  # Mismo puerto que docker-compose
     targetPort: 3600
     protocol: TCP
+  
   selector:
     app: desarrolloweb  # Cambié a desarrolloweb
 ---

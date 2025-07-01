@@ -7,6 +7,8 @@ import lombok.Data;
 @Schema(description = "DTO para información básica del usuario")
 public class userDTO {
 
+    @Schema(description = "ID del usuario", example = "1")
+    private Integer id;
     @Schema(description = "Nombre del usuario", example = "Juan")
     private String nombre;
 
