@@ -254,21 +254,23 @@ public class pedidoimpl implements pedidoservice {
         pedido.setStockProcesado(true);
     }
 
-    private void liberarStockReservado(pedido pedido) {
-        log.info("Liberando stock reservado para pedido cancelado: " + pedido.getIdpedido());
+    // private void liberarStockReservado(pedido pedido) {
+    // log.info("Liberando stock reservado para pedido cancelado: " +
+    // pedido.getIdpedido());
 
-        for (pedidoproducto pp : pedido.getPedidoProducto()) {
-            ProductoSucursal productoSucursal = pp.getProductoSucursal();
+    // for (pedidoproducto pp : pedido.getPedidoProducto()) {
+    // ProductoSucursal productoSucursal = pp.getProductoSucursal();
 
-            // Liberar el stock reservado sin afectar el stock real
-            productoSucursal.setStockReservado(productoSucursal.getStockReservado() - pp.getCantidad());
+    // // Liberar el stock reservado sin afectar el stock real
+    // productoSucursal.setStockReservado(productoSucursal.getStockReservado() -
+    // pp.getCantidad());
 
-            log.info("Liberando " + pp.getCantidad() + " unidades del producto: " +
-                    productoSucursal.getProducto().getNombre());
+    // log.info("Liberando " + pp.getCantidad() + " unidades del producto: " +
+    // productoSucursal.getProducto().getNombre());
 
-            productosucursalrepository.save(productoSucursal);
-        }
-    }
+    // productosucursalrepository.save(productoSucursal);
+    // }
+    // }
 
     @Override
     @Transactional
