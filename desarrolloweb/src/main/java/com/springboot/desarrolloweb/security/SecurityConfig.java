@@ -68,7 +68,8 @@ public class SecurityConfig {
                                                                 "/sucursal/{idSucursal}",
                                                                 "/categoria/all",
                                                                 "/categoria/{idcategoria}",
-                                                                "/productosucursal/sucursal/{idSucursal}")
+                                                                "/productosucursal/sucursal/{idSucursal}",
+                                                                "/ubicacion-usuario/**")
                                                 .permitAll()
 
                                                 // =============================================================

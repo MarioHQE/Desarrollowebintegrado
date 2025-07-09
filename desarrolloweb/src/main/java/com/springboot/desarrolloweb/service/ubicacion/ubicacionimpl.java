@@ -20,8 +20,10 @@ import com.springboot.desarrolloweb.response.agregarubicacionresponse;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ubicacionimpl implements ubicacionservice {
     @Autowired
     ubicacion_usuariorepository ubicacion_usuariorepository;
@@ -32,20 +34,21 @@ public class ubicacionimpl implements ubicacionservice {
     usuariorepository usuariorepository;
 
     @Override
-    public Set<ubicacion> getUbicacionesbyusuario(String email) {
+    public ResponseEntity<?> getUbicacionesbyusuario(String email) {
         Set<ubicacion_usuario> ubicaciones = ubicacion_usuariorepository.findbyusuario(email);
 
-        Set<ubicacion> ubicacionesencontradas = ubicaciones.stream()
-                .map(ubicacion_usuario::getUbicacion).collect(Collectors.toSet());
-        return ubicacionesencontradas;
+        List<ubicacion> ubicacionesencontradas = ubicaciones.stream()
+                .map(ubicacion_usuario::getUbicacion).collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(ubicacionesencontradas);
     }
 
-    public ResponseEntity<?> agregarubicacionpersonal(
-            @Valid @RequestBody ubicacionpersonalrequest ubicacionpersonalrequest) {
+    public ResponseEntity<?> agregarubicacionpersonal(ubicacionpersonalrequest ubicacionpersonalrequest) {
         {
-
+            log.info("email" + ubicacionpersonalrequest.getEmail());
             usuario usuario = usuariorepository.findByEmail(ubicacionpersonalrequest.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
             ubicacion ubicacion = new ubicacion();
             if (usuario.isEnabled() == false) {
                 return ResponseEntity.badRequest().body("El usuario no se ha verificado");
@@ -54,6 +57,7 @@ public class ubicacionimpl implements ubicacionservice {
             ubicacion_usuario ubicacion_usuario = new ubicacion_usuario();
             ubicacion.setLatitud(ubicacionpersonalrequest.getLatitud());
             ubicacion.setLongitud(ubicacionpersonalrequest.getLongitud());
+            ubicacion.setUbicacion(ubicacionpersonalrequest.getUbicacion());
             ubicacion_usuario.setUbicacion(ubicacion);
             ubicacion_usuario.setUsuario(usuario);
             ubicacionrepository.save(ubicacion);
