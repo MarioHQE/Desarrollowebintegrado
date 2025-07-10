@@ -1,6 +1,7 @@
 package com.springboot.desarrolloweb.service.sucursal;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 @Service
 public interface sucursalimplservice {
 
-    public List<sucursal> getSucursales();
+    public List<sucursal> getSucursales(Map<String, Object> request);
 
     public sucursal getSucursal(int idSucursal);
 

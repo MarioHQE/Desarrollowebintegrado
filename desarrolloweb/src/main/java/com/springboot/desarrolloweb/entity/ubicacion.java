@@ -1,5 +1,6 @@
 package com.springboot.desarrolloweb.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -16,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
@@ -33,7 +35,8 @@ public class ubicacion {
     @Column(name = "longitud")
     private double longitud;
     @JsonIgnore
-    @OneToMany(mappedBy = "ubicacion", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private Set<ubicacion_usuario> ubicacion_usuario;
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "ubicacion", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ubicacion_usuario> ubicacion_usuario = new HashSet<>();
 
 }

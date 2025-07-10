@@ -11,7 +11,7 @@ import com.springboot.desarrolloweb.request.ubicacion.ubicacionpersonalrequest;
 @Service
 public interface ubicacionservice {
 
-    public ResponseEntity<?> getUbicacionesbyusuario(String email);
+    public Set<?> getUbicacionesbyusuario(String email);
 
     public ResponseEntity<?> agregarubicacionpersonal(ubicacionpersonalrequest ubicacionpersonalrequest);
 

@@ -25,7 +25,7 @@ public class ubicacion_usuariocontroller {
     private ubicacionimpl ubicacionimpl;
 
     @GetMapping("/{email}")
-    public ResponseEntity<?> ubicacion(@PathVariable String email) {
+    public Set<ubicacion> ubicacion(@PathVariable String email) {
         return ubicacionimpl.getUbicacionesbyusuario(email);
     }
 

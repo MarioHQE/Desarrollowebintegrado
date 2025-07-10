@@ -8,6 +8,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,6 +56,9 @@ public class usuario implements UserDetails {
     private String verificationCode;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<usuariorol> usuariorol;
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    private List<ubicacion_usuario> ubicacion_usuario;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

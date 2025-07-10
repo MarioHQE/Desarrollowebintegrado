@@ -8,7 +8,10 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
 import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 import com.springboot.desarrolloweb.service.sucursal.sucursalimplservice;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +21,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/sucursal")
+@Slf4j
 public class sucursalcontroller {
     @Autowired
     sucursalimplservice sucursalimplservice;
 
     @GetMapping("/all")
-    public List<sucursal> obtenerSucursales(@RequestParam String param) {
-        return sucursalimplservice.getSucursales();
+    public List<sucursal> obtenerSucursales(@RequestHeader Map<String, Object> request, @RequestParam String param) {
+        return sucursalimplservice.getSucursales(request);
     }
 
     @GetMapping("/{idSucursal}")
