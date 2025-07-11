@@ -2,6 +2,7 @@ package com.springboot.desarrolloweb.service.sucursal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.springboot.desarrolloweb.dao.sucursalrepository;
 import com.springboot.desarrolloweb.dao.usuariorepository;
 import com.springboot.desarrolloweb.entity.sucursal;
+import com.springboot.desarrolloweb.entity.ubicacion;
+import com.springboot.desarrolloweb.entity.ubicacion_usuario;
 import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
 import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
@@ -41,7 +44,8 @@ public class sucursalimpl implements sucursalimplservice {
     }
 
     @Override
-    public List<sucursal> getSucursalesByCiudadofUserCity(Map<String, String> requestheaderMap) {
+    public List<sucursal> getSucursalesByCiudadofUserCity(int idubicacion_usuario,
+            Map<String, String> requestheaderMap) {
         String headertoken = requestheaderMap.get("Authorization");
         if (headertoken == null) {
             return sucursalrepository.findAll();
@@ -59,7 +63,7 @@ public class sucursalimpl implements sucursalimplservice {
         if (headertoken != null && headertoken.startsWith("Bearer ")) {
             String email = jwutil.getUser(token);
             if (email != null && !email.isEmpty()) {
-                return getListsucursalbyusuario(email);
+                return getListsucursalbyusuario(idubicacion_usuario, email);
 
             }
 
@@ -67,9 +71,13 @@ public class sucursalimpl implements sucursalimplservice {
         return sucursalrepository.findAll();
     }
 
-    public List<sucursal> getListsucursalbyusuario(String email) {
+    public List<sucursal> getListsucursalbyusuario(int idubicacion_usuario, String email) {
         usuario user = usuariorepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        return sucursalrepository.findByCiudad();
+        ubicacion_usuario ubicacion_usuario = user.getUbicacion_usuario().stream()
+                .filter(ub_us -> ub_us.getIdubicacion_usuario() == idubicacion_usuario).findAny()
+                .orElseThrow(() -> new RuntimeException("No se encuentra la ubicacion"));
+
+        return sucursalrepository.findByCiudad(ubicacion_usuario.getUbicacion().getCiudad());
 
     }
 

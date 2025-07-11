@@ -15,7 +15,8 @@ public interface sucursalimplservice {
 
     public List<sucursal> getSucursales();
 
-    public List<sucursal> getSucursalesByCiudadofUserCity(Map<String, String> requestheaderMap);
+    public List<sucursal> getSucursalesByCiudadofUserCity(int idubicacion_usuario,
+            Map<String, String> requestheaderMap);
 
     public sucursal getSucursal(int idSucursal);
 

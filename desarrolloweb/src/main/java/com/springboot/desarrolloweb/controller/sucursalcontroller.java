@@ -36,9 +36,10 @@ public class sucursalcontroller {
         return sucursalimplservice.getSucursales();
     }
 
-    @GetMapping("/usercity")
-    public List<sucursal> obtenerSucursalesByCiudadofUserCity(@RequestHeader Map<String, String> requestheaderMap) {
-        return sucursalimplservice.getSucursalesByCiudadofUserCity(requestheaderMap);
+    @GetMapping("/usercity/{idubicacion_usuario}")
+    public List<sucursal> obtenerSucursalesByCiudadofUserCity(@PathVariable int idubicacion_usuario,
+            @RequestHeader Map<String, String> requestheaderMap) {
+        return sucursalimplservice.getSucursalesByCiudadofUserCity(idubicacion_usuario, requestheaderMap);
     }
 
     @GetMapping("/{idSucursal}")
