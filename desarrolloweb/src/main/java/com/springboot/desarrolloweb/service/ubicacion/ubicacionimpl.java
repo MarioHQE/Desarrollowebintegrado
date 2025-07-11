@@ -17,6 +17,7 @@ import com.springboot.desarrolloweb.entity.ubicacion_usuario;
 import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.request.ubicacion.ubicacionpersonalrequest;
 import com.springboot.desarrolloweb.response.agregarubicacionresponse;
+import com.springboot.desarrolloweb.serviciosexternos.Geolocalizacion;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +32,8 @@ public class ubicacionimpl implements ubicacionservice {
 
     @Autowired
     usuariorepository usuariorepository;
+    @Autowired
+    Geolocalizacion geolocalizacion;
 
     @Override
     @Transactional(readOnly = true)
@@ -61,6 +64,10 @@ public class ubicacionimpl implements ubicacionservice {
         ubicacion.setLatitud(ubicacionpersonalrequest.getLatitud());
         ubicacion.setLongitud(ubicacionpersonalrequest.getLongitud());
         ubicacion.setUbicacion(ubicacionpersonalrequest.getUbicacion());
+        Geolocalizacion.LocationInfo locationInfo = geolocalizacion.getLocationInfo(ubicacion.getLatitud(),
+                ubicacion.getLongitud());
+        ubicacion.setCiudad(locationInfo.getCiudad());
+        ubicacion.setDistrito(locationInfo.getDistrito());
 
         // Guardar primero la ubicación
         ubicacion ubicacionGuardada = ubicacionrepository.save(ubicacion);

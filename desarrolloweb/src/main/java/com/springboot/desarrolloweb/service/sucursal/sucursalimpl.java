@@ -17,6 +17,7 @@ import com.springboot.desarrolloweb.entity.usuario;
 import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
 import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 import com.springboot.desarrolloweb.security.jwutil;
+import com.springboot.desarrolloweb.serviciosexternos.Geolocalizacion;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,23 @@ public class sucursalimpl implements sucursalimplservice {
     private jwutil jwutil;
     @Autowired
     usuariorepository usuariorepository;
+    @Autowired
+    private Geolocalizacion geolocalizacion;
 
     @Override
-    public List<sucursal> getSucursales(Map<String, Object> requestheaderMap) {
-        String headertoken = (String) requestheaderMap.get("Authorization");
-        String token = ((String) requestheaderMap.get("Authorization")).substring(7);
+    public List<sucursal> getSucursales() {
+        return sucursalrepository.findAll();
+
+    }
+
+    @Override
+    public List<sucursal> getSucursalesByCiudadofUserCity(Map<String, String> requestheaderMap) {
+        String headertoken = requestheaderMap.get("Authorization");
+        if (headertoken == null) {
+            return sucursalrepository.findAll();
+
+        }
+        String token = requestheaderMap.get("Authorization").substring(7);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info(authentication.getPrincipal().toString());
@@ -42,38 +55,24 @@ public class sucursalimpl implements sucursalimplservice {
             return sucursalrepository.findAll();
 
         }
+
         if (headertoken != null && headertoken.startsWith("Bearer ")) {
             String email = jwutil.getUser(token);
             if (email != null && !email.isEmpty()) {
-                List<sucursal> sucursales = sucursalrepository.findAll();
-                usuario usuario = usuariorepository.findByEmail(email)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
-                sucursales.forEach(sucursal -> {
-                    usuario.getUbicacion_usuario().forEach(ubicacion_usuario -> {
-                        calculatedistancetokm(ubicacion_usuario.getUbicacion().getLatitud(),
-                                ubicacion_usuario.getUbicacion().getLongitud(), sucursal.getLat(), sucursal.getLon());
+                return getListsucursalbyusuario(email);
 
-                    });
-
-                });
             }
 
         }
         return sucursalrepository.findAll();
     }
 
-    /************* ✨ Windsurf Command ⭐ *************/
-    /**
-     * Calcula la distancia entre dos puntos geograficos dados en latitud y
-     * longitud, en kilómetros.
-     * 
-     * @param lat1 latitud del punto 1
-     * @param lon1 longitud del punto 1
-     * @param lat2 latitud del punto 2
-     * @param lon2 longitud del punto 2
-     * @return la distancia en kilómetros
-     */
-    /******* d32e8031-f6e2-47bc-ae26-90cb38a3280d *******/
+    public List<sucursal> getListsucursalbyusuario(String email) {
+        usuario user = usuariorepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return sucursalrepository.findByCiudad();
+
+    }
+
     public double calculatedistancetokm(double lat1, double lon1, double lat2, double lon2) {
         double R = 6371; // Radio de la Tierra en kilómetros
         double dLat = Math.toRadians(lat2 - lat1);
@@ -105,9 +104,10 @@ public class sucursalimpl implements sucursalimplservice {
         sucursal sucursal = new sucursal();
         sucursal.setNombre(request.getNombre());
         sucursal.setDireccion(request.getDireccion());
-        sucursal.setCiudad(request.getCiudad());
         sucursal.setLat(request.getLat());
         sucursal.setLon(request.getLon());
+        sucursal.setCiudad(geolocalizacion.getLocationInfo(sucursal.getLat(), sucursal.getLon()).getCiudad());
+        sucursal.setDistrito(geolocalizacion.getLocationInfo(sucursal.getLat(), sucursal.getLon()).getDistrito());
         sucursal.setCodigoPropio(codigoGenerado);
 
         sucursalrepository.save(sucursal);
@@ -145,7 +145,10 @@ public class sucursalimpl implements sucursalimplservice {
         }
 
         if (ciudadCambiada) {
-            sucursalExistente.setCiudad(request.getCiudad());
+            sucursalExistente
+                    .setCiudad(geolocalizacion.getLocationInfo(request.getLat(), request.getLon()).getCiudad());
+            sucursalExistente
+                    .setDistrito(geolocalizacion.getLocationInfo(request.getLat(), request.getLon()).getDistrito());
         }
 
         if (nombreCambiado || ciudadCambiada) {

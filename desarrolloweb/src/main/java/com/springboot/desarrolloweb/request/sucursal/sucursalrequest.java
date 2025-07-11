@@ -16,6 +16,7 @@ public class sucursalrequest {
     @NotBlank
     @NotEmpty
     private String ciudad;
+    private String distrito;
 
     private String codigo_propio;
     @NotBlank

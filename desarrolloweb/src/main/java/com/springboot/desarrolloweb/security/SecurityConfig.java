@@ -66,6 +66,7 @@ public class SecurityConfig {
                                                                 "/producto/{idProducto}",
                                                                 "/sucursal/all",
                                                                 "/sucursal/{idSucursal}",
+                                                                "/sucursal/usercity",
                                                                 "/categoria/all",
                                                                 "/categoria/{idcategoria}",
                                                                 "/productosucursal/sucursal/{idSucursal}",

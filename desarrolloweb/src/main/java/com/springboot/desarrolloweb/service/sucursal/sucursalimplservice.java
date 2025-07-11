@@ -13,7 +13,9 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 @Service
 public interface sucursalimplservice {
 
-    public List<sucursal> getSucursales(Map<String, Object> request);
+    public List<sucursal> getSucursales();
+
+    public List<sucursal> getSucursalesByCiudadofUserCity(Map<String, String> requestheaderMap);
 
     public sucursal getSucursal(int idSucursal);
 

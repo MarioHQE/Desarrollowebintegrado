@@ -1,7 +1,6 @@
 package com.springboot.desarrolloweb.request.ubicacion;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
@@ -14,4 +13,5 @@ public class ubicacionpersonalrequest {
     double longitud;
 
     double latitud;
+
 }

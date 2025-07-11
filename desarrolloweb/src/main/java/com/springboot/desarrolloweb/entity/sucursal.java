@@ -32,8 +32,11 @@ public class sucursal {
     private double lon;
     @Column(name = "latitud")
     private double lat;
+
     @Column(name = "ciudad")
     private String ciudad;
+    @Column(name = "distrito")
+    private String distrito;
     @Column(name = "codigo_propio", unique = true)
     private String codigoPropio;
 

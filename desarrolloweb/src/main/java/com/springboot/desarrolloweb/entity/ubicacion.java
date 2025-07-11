@@ -34,6 +34,10 @@ public class ubicacion {
     private double latitud;
     @Column(name = "longitud")
     private double longitud;
+    @Column(name = "ciudad")
+    private String ciudad;
+    @Column(name = "distrito")
+    private String distrito;
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "ubicacion", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
