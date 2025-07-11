@@ -22,6 +22,7 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 import com.springboot.desarrolloweb.security.jwutil;
 import com.springboot.desarrolloweb.serviciosexternos.Geolocalizacion;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,16 +46,17 @@ public class sucursalimpl implements sucursalimplservice {
 
     @Override
     public List<sucursal> getSucursalesByCiudadofUserCity(int idubicacion_usuario,
-            Map<String, String> requestheaderMap) {
-        String headertoken = requestheaderMap.get("Authorization");
+            HttpServletRequest requestheaderMap) {
+        String headertoken = requestheaderMap.getHeader("Authorization");
+        log.info("Header token:" + headertoken);
         if (headertoken == null) {
             return sucursalrepository.findAll();
 
         }
-        String token = requestheaderMap.get("Authorization").substring(7);
+        String token = requestheaderMap.getHeader("Authorization").substring(7);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info(authentication.getPrincipal().toString());
+        log.info(" Autenticado principal:" + authentication.getPrincipal().toString());
         if ("anonymousUser".equals(authentication.getPrincipal())) {
             return sucursalrepository.findAll();
 
@@ -75,8 +77,12 @@ public class sucursalimpl implements sucursalimplservice {
         usuario user = usuariorepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
         ubicacion_usuario ubicacion_usuario = user.getUbicacion_usuario().stream()
                 .filter(ub_us -> ub_us.getIdubicacion_usuario() == idubicacion_usuario).findAny()
-                .orElseThrow(() -> new RuntimeException("No se encuentra la ubicacion"));
+                .orElse(null);
+        if (ubicacion_usuario == null) {
+            return sucursalrepository.findAll();
 
+        }
+        log.info("ubicacion_usuario.getUbicacion().getCiudad(): {}", ubicacion_usuario.getUbicacion().getCiudad());
         return sucursalrepository.findByCiudad(ubicacion_usuario.getUbicacion().getCiudad());
 
     }

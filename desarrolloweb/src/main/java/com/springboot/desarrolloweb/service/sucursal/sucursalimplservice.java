@@ -10,13 +10,15 @@ import com.springboot.desarrolloweb.entity.sucursal;
 import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
 import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Service
 public interface sucursalimplservice {
 
     public List<sucursal> getSucursales();
 
     public List<sucursal> getSucursalesByCiudadofUserCity(int idubicacion_usuario,
-            Map<String, String> requestheaderMap);
+            HttpServletRequest requestheaderMap);
 
     public sucursal getSucursal(int idSucursal);
 

@@ -8,6 +8,7 @@ import com.springboot.desarrolloweb.request.sucursal.sucursalrequest;
 import com.springboot.desarrolloweb.request.sucursal.sucursalupdaterequest;
 import com.springboot.desarrolloweb.service.sucursal.sucursalimplservice;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -38,7 +39,8 @@ public class sucursalcontroller {
 
     @GetMapping("/usercity/{idubicacion_usuario}")
     public List<sucursal> obtenerSucursalesByCiudadofUserCity(@PathVariable int idubicacion_usuario,
-            @RequestHeader Map<String, String> requestheaderMap) {
+            HttpServletRequest requestheaderMap) {
+        log.info("headertoken" + requestheaderMap.getHeader("Authorization"));
         return sucursalimplservice.getSucursalesByCiudadofUserCity(idubicacion_usuario, requestheaderMap);
     }
 
