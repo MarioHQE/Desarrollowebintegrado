@@ -80,11 +80,23 @@ public class sucursalimpl implements sucursalimplservice {
                 .orElse(null);
         if (ubicacion_usuario == null) {
             return sucursalrepository.findAll();
+        }
+        if (user.getUbicacion_usuario().size() == 1) {
+            ubicacion_usuario = user.getUbicacion_usuario().get(0);
+        }
+        if (user.getUbicacion_usuario().isEmpty() || user.getUbicacion_usuario().size() <= 0) {
+            return sucursalrepository.findAll();
 
         }
         log.info("ubicacion_usuario.getUbicacion().getCiudad(): {}", ubicacion_usuario.getUbicacion().getCiudad());
         return sucursalrepository.findByCiudad(ubicacion_usuario.getUbicacion().getCiudad());
 
+    }
+
+    @Override
+    public boolean isUserHasUbicacion(String email) {
+        usuario user = usuariorepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getUbicacion_usuario().size() > 0;
     }
 
     public double calculatedistancetokm(double lat1, double lon1, double lat2, double lon2) {

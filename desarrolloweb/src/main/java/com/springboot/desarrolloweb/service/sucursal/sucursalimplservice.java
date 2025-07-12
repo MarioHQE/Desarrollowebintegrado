@@ -26,5 +26,7 @@ public interface sucursalimplservice {
 
     public ResponseEntity<String> deleteSucursal(int idSucursal);
 
+    public boolean isUserHasUbicacion(String email);
+
     public ResponseEntity<String> updateSucursal(int idSucursal, sucursalupdaterequest sucursal);
 }

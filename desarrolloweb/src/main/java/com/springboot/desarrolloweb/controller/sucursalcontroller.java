@@ -44,6 +44,11 @@ public class sucursalcontroller {
         return sucursalimplservice.getSucursalesByCiudadofUserCity(idubicacion_usuario, requestheaderMap);
     }
 
+    @GetMapping("/isuserhasubicacion")
+    public boolean isUserHasUbicacion(@RequestParam String email) {
+        return sucursalimplservice.isUserHasUbicacion(email);
+    }
+
     @GetMapping("/{idSucursal}")
     public sucursal obtenerSucursal(@PathVariable("idSucursal") int param) {
         return sucursalimplservice.getSucursal(param);
