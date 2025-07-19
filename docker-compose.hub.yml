@@ -3,7 +3,7 @@ version: "3.8"
 services:
   desarrolloweb:
     container_name: desarrolloweb-prod
-    build: ./desarrolloweb
+    image: mariohqe/desarrolloweb:latest
     ports:
       - "3600:3600"
     environment:
