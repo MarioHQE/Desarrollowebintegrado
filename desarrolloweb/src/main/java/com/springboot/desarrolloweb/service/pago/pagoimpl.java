@@ -33,8 +33,8 @@ public class pagoimpl implements pagoservice {
         @Value("${stripe.secretkey}")
         String secretkey;
 
-        // @Value("${stripe.webhook.secret}")
-        String webhookSecret = "whsec_0413b21f46b91831209ef4ada5ff08fd7428b314238748ae2a4819d5dad629a4";
+        @Value("${stripe.webhook.secret}")
+        String webhookSecret;
 
         @Autowired
         pedidorepository pedidodao;
