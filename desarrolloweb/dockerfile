@@ -30,9 +30,11 @@ RUN chown appuser:appgroup app.jar
 # Cambiar al usuario no-root
 USER appuser
 
-EXPOSE 3600
+# Exponer el puerto (Render asignará el puerto dinámicamente)
+EXPOSE ${PORT:-3600}
 
 # Configurar variables de entorno para JVM
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Usar el puerto asignado por Render
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-3600} -jar app.jar"]
