@@ -19,7 +19,7 @@ WORKDIR /app
 
 # Copiar el JAR compilado desde la etapa anterior
 COPY --from=build /app/target/desarrolloweb-0.0.1-SNAPSHOT.jar app.jar
-
+COPY desarrolloweb-ssl.p12 desarrolloweb-ssl.p12
 # Crear usuario no-root para seguridad
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup

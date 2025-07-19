@@ -23,5 +23,22 @@ services:
       - SERVER_SSL_KEY_STORE_TYPE=PKCS12
       - SERVER_SSL_KEY_ALIAS=desarrolloweb-ssl
       - SERVER_PORT=8443
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+        - ./nginx/conf.d:/etc/nginx/conf
+        - ./nginx/ssl:/etc/nginx/ssl
+        - ./certs:/etc/nginx/certs
+    depends_on:
+        - desarrolloweb
+    networks:
+        - backend
 
+networks:
+  backend:
+    driver: bridge
 
