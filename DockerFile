@@ -3,11 +3,11 @@ FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
 # Copiar el archivo pom.xml primero para aprovechar la caché de Docker
-COPY pom.xml .
+COPY desarrolloweb/pom.xml .
 RUN mvn dependency:go-offline -B
 
 # Copiar el código fuent
-COPY src ./src
+COPY desarrolloweb/src ./src
 
 # Compilar la aplicación
 RUN mvn clean package -DskipTests
