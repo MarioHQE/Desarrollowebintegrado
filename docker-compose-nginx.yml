@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  # Aplicación Spring Boot
+  desarrolloweb:
+    container_name: desarrolloweb-container
+    build: ./desarrolloweb
+    ports:
+      - "3600:3600"
+    environment:
+      - DATABASE_URL=jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket?createDatabaseIfNotExist=true
+      - DATABASE_USERNAME=adminsq
+      - DATABASE_PASSWORD=Mario14y15.
+      - SPRING_PROFILES_ACTIVE=docker
+      - STRIPE_SECRET_KEY=sk_test_51RRpwwRS5ApzbFdePxJPtFPIU5SoWXi6a9r3BfW92TNd6cPSTMf3n3BfnazI9t0KBir2VbNPYLifXVjSVUmPrlPX001PqO7jS7
+      - STRIPE_WEBHOOK_SECRET=whsec_9850a314cfa962c23f3616368e571af42d3d78f675cac0825c67d2d5bdffbee5
+      - AWS_ACCESS_KEY=AKIAWYOPDF3QT7NDAJUC
+      - AWS_SECRET_KEY=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
+      - MAIL_USERNAME=marioelpro08@gmail.com
+      - MAIL_PASSWORD=bmch rbeg tfmx ondv
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3600/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - app-network
+
+  # Nginx como proxy reverso
+  nginx:
+    container_name: nginx-proxy
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - desarrolloweb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - app-network
+
+volumes:
+  nginx-logs:
+
+networks:
+  app-network:
+    driver: bridge 
