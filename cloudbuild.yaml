@@ -1,4 +1,15 @@
 steps:
+  # Mostrar variables de entorno (debug)
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "PROJECT_ID: $PROJECT_ID"
+        echo "COMMIT_SHA: $COMMIT_SHA"
+        echo "BRANCH_NAME: $BRANCH_NAME"
+        echo "BUILD_ID: $BUILD_ID"
+  
   # Construir la imagen Docker
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/desarrolloweb:$COMMIT_SHA', '.']
@@ -13,7 +24,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'desarrolloweb-service'
+      - 'mnimarket'
       - '--image'
       - 'gcr.io/$PROJECT_ID/desarrolloweb:$COMMIT_SHA'
       - '--region'
@@ -22,7 +33,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--port'
-      - '8080'  
+      - '8080'
       - '--memory'
       - '512Mi'
       - '--cpu'
@@ -32,7 +43,7 @@ steps:
       - '--timeout'
       - '300'
       - '--set-env-vars'
-      - 'SPRING_PROFILES_ACTIVE=prod,PORT=8080,DATABASE_URL=jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket,DATABASE_USERNAME=adminsq,DATABASE_PASSWORD=Mario14y15.,AWS_ACCESS_KEY=AKIAWYOPDF3QT7NDAJUC,AWS_SECRET_KEY=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,STRIPE_SECRET_KEY=sk_test_51RRpwwRS5ApzbFdePxJPtFPIU5SoWXi6a9r3BfW92TNd6cPSTMf3n3BfnazI9t0KBir2VbNPYLifXVjSVUmPrlPX001PqO7jS7,STRIPE_WEBHOOK_SECRET=whsec_9850a314cfa962c23f3616368e571af42d3d78f675cac0825c67d2d5bdffbee5,MAIL_HOST=smtp.gmail.com,MAIL_PORT=587,MAIL_USERNAME=marioelpro08@gmail.com,MAIL_PASSWORD=bmch rbeg tfmx ondv'
+      - 'PORT=8080'
 
 # Opciones de construcción
 options:
@@ -41,4 +52,3 @@ options:
 # Imágenes que se crearán
 images:
   - 'gcr.io/$PROJECT_ID/desarrolloweb:$COMMIT_SHA' 
- 
