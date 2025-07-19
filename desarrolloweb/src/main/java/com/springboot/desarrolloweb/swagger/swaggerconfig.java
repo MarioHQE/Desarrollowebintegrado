@@ -31,7 +31,7 @@ public class swaggerconfig {
                                                                 .url("https://opensource.org/licenses/MIT")))
                                 .servers(List.of(
                                                 new Server()
-                                                                .url("http://localhost:3600")
+                                                                .url("http://localhost:8080")
                                                                 .description("Servidor de Desarrollo Local")))
                                 .components(new Components()
                                                 .addSecuritySchemes("Bearer Authentication",

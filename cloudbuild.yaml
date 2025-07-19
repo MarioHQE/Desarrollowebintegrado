@@ -32,7 +32,7 @@ steps:
       - '--timeout'
       - '300'
       - '--set-env-vars'
-      - 'SPRING_PROFILES_ACTIVE=cloud,PORT=3600'
+      - 'SPRING_PROFILES_ACTIVE=cloud,PORT=8080'
 
 # Opciones de construcción
 options:

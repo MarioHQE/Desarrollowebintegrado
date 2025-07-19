@@ -162,6 +162,7 @@ public class SecurityConfig {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.addAllowedOrigin("http://localhost:3600"); // Agregar el puerto de tu app
                 configuration.addAllowedOrigin("http://localhost:5173");
+                configuration.addAllowedOrigin("http://localhost:8080");
                 configuration.addAllowedOrigin("http://127.0.0.1:*"); // Para Stripe CLI
                 configuration.addAllowedOrigin("https://api.stripe.com"); // Para Stripe
                 configuration.addAllowedOrigin("https://54.210.224.54");

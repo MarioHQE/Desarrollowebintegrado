@@ -32,10 +32,10 @@ RUN chown appuser:appgroup app.jar
 USER appuser
 
 # Exponer el puerto (Cloud Run asignará el puerto dinámicamente)
-EXPOSE 3600
+EXPOSE 8080
 
 # Configurar variables de entorno para JVM optimizadas para Cloud Run
 ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
 
 # Comando de inicio para Cloud Run
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=3600 -jar app.jar"] 
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=8080 -jar app.jar"] 
