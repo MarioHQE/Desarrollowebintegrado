@@ -5,7 +5,8 @@ services:
     repo: https://github.com/tu_usuario/tu_repo
     branch: main
     plan: free
-    dockerfilePath: Dockerfile
+    dockerfilePath: desarrolloweb/dockerfile
+
     envVars:
       - key: DATABASE_URL
         value: jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket
