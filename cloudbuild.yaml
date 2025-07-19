@@ -22,7 +22,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--port'
-      - '8080'
+      - '3600'
       - '--memory'
       - '512Mi'
       - '--cpu'
@@ -32,7 +32,7 @@ steps:
       - '--timeout'
       - '300'
       - '--set-env-vars'
-      - 'SPRING_PROFILES_ACTIVE=prod,PORT=8080'
+      - 'SPRING_PROFILES_ACTIVE=cloud,PORT=3600'
 
 # Opciones de construcción
 options:
