@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script de monitoreo para la aplicación
-# Uso: ./monitor.sh [status|logs|restart|cleanup]
+# Script de monitoreo para la aplicación con RDS
+# Uso: ./monitor-rds.sh [status|logs|restart|cleanup]
 
 set -e
 
@@ -66,6 +66,15 @@ show_status() {
     fi
     
     echo ""
+    print_status "🗄️  Estado de RDS:"
+    RDS_HOST="minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com"
+    if nc -z $RDS_HOST 3306 2>/dev/null; then
+        echo "  - RDS: ✅ Accesible"
+    else
+        echo "  - RDS: ❌ No accesible"
+    fi
+    
+    echo ""
     print_status "🔒 Estado de Nginx:"
     if systemctl is-active --quiet nginx; then
         echo "  - Nginx: ✅ Activo"
@@ -80,12 +89,21 @@ show_logs() {
     
     echo ""
     print_status "📋 Últimos logs de la aplicación:"
-    docker-compose -f docker-compose.prod.yml logs --tail=50 desarrolloweb
+    docker-compose logs --tail=50 desarrolloweb
     
     echo ""
     print_status "📋 Logs de Nginx:"
-    sudo tail -20 /var/log/nginx/desarrolloweb_access.log
-    sudo tail -20 /var/log/nginx/desarrolloweb_error.log
+    if [ -f "/var/log/nginx/desarrolloweb_access.log" ]; then
+        sudo tail -20 /var/log/nginx/desarrolloweb_access.log
+    else
+        echo "  - Log de acceso no encontrado"
+    fi
+    
+    if [ -f "/var/log/nginx/desarrolloweb_error.log" ]; then
+        sudo tail -20 /var/log/nginx/desarrolloweb_error.log
+    else
+        echo "  - Log de errores no encontrado"
+    fi
 }
 
 # Función para reiniciar la aplicación
@@ -93,13 +111,13 @@ restart_app() {
     print_header "Reiniciando la aplicación"
     
     print_status "Deteniendo contenedores..."
-    docker-compose -f docker-compose.prod.yml down
+    docker-compose down
     
     print_status "Limpiando recursos..."
     docker system prune -f
     
     print_status "Levantando contenedores..."
-    docker-compose -f docker-compose.prod.yml up -d
+    docker-compose up -d
     
     print_status "Esperando a que la aplicación esté lista..."
     sleep 30
@@ -108,7 +126,7 @@ restart_app() {
         print_status "✅ Aplicación reiniciada correctamente"
     else
         print_error "❌ Error al reiniciar la aplicación"
-        docker-compose -f docker-compose.prod.yml logs desarrolloweb
+        docker-compose logs desarrolloweb
     fi
 }
 
@@ -129,33 +147,26 @@ cleanup() {
     docker network prune -f
     
     print_status "Limpiando logs de Nginx..."
-    sudo truncate -s 0 /var/log/nginx/desarrolloweb_access.log
-    sudo truncate -s 0 /var/log/nginx/desarrolloweb_error.log
+    if [ -f "/var/log/nginx/desarrolloweb_access.log" ]; then
+        sudo truncate -s 0 /var/log/nginx/desarrolloweb_access.log
+    fi
+    if [ -f "/var/log/nginx/desarrolloweb_error.log" ]; then
+        sudo truncate -s 0 /var/log/nginx/desarrolloweb_error.log
+    fi
     
     print_status "✅ Limpieza completada"
 }
 
-# Función para backup
-backup() {
-    print_header "Creando backup de la aplicación"
+# Función para verificar RDS
+check_rds() {
+    print_header "Verificando conectividad con RDS"
     
-    BACKUP_DIR="/opt/backups/$(date +%Y%m%d_%H%M%S)"
-    sudo mkdir -p $BACKUP_DIR
-    
-    print_status "Backup de logs..."
-    sudo cp -r /var/log/nginx/ $BACKUP_DIR/
-    
-    print_status "Backup de configuración..."
-    sudo cp docker-compose.prod.yml $BACKUP_DIR/
-    sudo cp env.prod $BACKUP_DIR/
-    sudo cp nginx-app.conf $BACKUP_DIR/
-    
-    print_status "Backup de base de datos (si es local)..."
-    if docker ps | grep -q mysqldb; then
-        docker exec mysqldb mysqldump -u root -pmario14y15. cremeria > $BACKUP_DIR/database_backup.sql
+    if [ -f "check-rds.sh" ]; then
+        chmod +x check-rds.sh
+        ./check-rds.sh
+    else
+        print_error "Script check-rds.sh no encontrado"
     fi
-    
-    print_status "✅ Backup creado en: $BACKUP_DIR"
 }
 
 # Función para mostrar ayuda
@@ -167,13 +178,14 @@ show_help() {
     echo "  logs      - Mostrar logs de la aplicación y Nginx"
     echo "  restart   - Reiniciar la aplicación"
     echo "  cleanup   - Limpiar recursos del sistema"
-    echo "  backup    - Crear backup de la aplicación"
+    echo "  rds       - Verificar conectividad con RDS"
     echo "  help      - Mostrar esta ayuda"
     echo ""
     echo "Ejemplos:"
     echo "  $0 status"
     echo "  $0 logs"
     echo "  $0 restart"
+    echo "  $0 rds"
 }
 
 # Función principal
@@ -191,8 +203,8 @@ main() {
         cleanup)
             cleanup
             ;;
-        backup)
-            backup
+        rds)
+            check_rds
             ;;
         help|--help|-h)
             show_help

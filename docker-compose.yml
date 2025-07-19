@@ -7,23 +7,9 @@ services:
     ports:
       - "3600:3600"
     environment:
-      - DATABASE_URL= jdbc:mysql://mysqldb:3306/cremeria?createDatabaseIfNotExist=true
-      - DATABASE_USERNAME=root
-      - DATABASE_PASSWORD=mario14y15.
+      - DATABASE_URL= jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket?createDatabaseIfNotExist=true
+      - DATABASE_USERNAME=adminsq
+      - DATABASE_PASSWORD=Mario14y15.
       - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - mysqldb
- 
 
-  mysqldb:
-    container_name: mysqldb
-    image: mysql:latest
-    ports:
-      - "3307:3306" # cambia a 3307 si el 3306 local está ocupado
-    environment:
-      MYSQL_DATABASE: cremeria
-      MYSQL_PASSWORD: mario14y15.
-      MYSQL_ROOT_PASSWORD: mario14y15.
-   
-    
 
