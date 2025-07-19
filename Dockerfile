@@ -38,4 +38,4 @@ EXPOSE 3600
 ENV JAVA_OPTS="-Xmx512m -Xms256m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
 
 # Comando de inicio para Cloud Run
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=${PORT:-3600} -jar app.jar"] 
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dserver.port=3600 -jar app.jar"] 
