@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: desarrolloweb
+    env: docker
+    repo: https://github.com/tu_usuario/tu_repo
+    branch: main
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket
+      - key: DATABASE_USERNAME
+        value: adminsq
+      - key: DATABASE_PASSWORD
+        value: sozha1234
+      - key: STRIPE_SECRET_KEY
+        value: sk_test_...
+      - key: STRIPE_WEBHOOK_SECRET
+        value: whsec_...
+      - key: AWS_ACCESS_KEY
+        value: AKIA...
+      - key: AWS_SECRET_KEY
+        value: 9axT...
+      - key: MAIL_USERNAME
+        value: marioelpro08@gmail.com
+      - key: MAIL_PASSWORD
+        value: bmch rbeg tfmx ondv
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
