@@ -163,6 +163,7 @@ public class SecurityConfig {
                 configuration.addAllowedOrigin("http://localhost:5173");
                 configuration.addAllowedOrigin("http://127.0.0.1:*"); // Para Stripe CLI
                 configuration.addAllowedOrigin("https://api.stripe.com"); // Para Stripe
+                configuration.addAllowedOrigin("https://front-minimarketluisa.onrender.com");
                 configuration.addAllowedMethod("*");
                 configuration.addAllowedHeader("*");
                 configuration.setAllowCredentials(true);

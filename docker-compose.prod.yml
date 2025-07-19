@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  desarrolloweb:
+    container_name: desarrolloweb-prod
+    build: ./desarrolloweb
+    ports:
+      - "3600:3600"
+    environment:
+      - DATABASE_URL=jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/cremeria?createDatabaseIfNotExist=true&useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true
+      - DATABASE_USERNAME=${DB_USERNAME}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - SPRING_PROFILES_ACTIVE=docker
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3600/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 
