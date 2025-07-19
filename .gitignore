@@ -1,0 +1,61 @@
+# Certificados SSL (NO subir a GitHub)
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.pfx
+*.p7b
+*.p7c
+
+# Directorios de certificados
+certbot/
+ssl/
+certs/
+keystore/
+
+# Variables de entorno
+.env
+.env.local
+.env.production
+.env.staging
+
+# Logs
+*.log
+logs/
+
+# Directorios de build
+target/
+build/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Spring Boot
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# AWS
+.aws/
+
+# Backup files
+*.bak
+*.backup
+*.tmp 

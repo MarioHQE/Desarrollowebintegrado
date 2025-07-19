@@ -1,11 +1,13 @@
 version: "3.8"
 
 services:
+  # Aplicación Spring Boot con SSL interno
   desarrolloweb:
-    container_name: backcontainer
+    container_name: desarrolloweb-app-ssl
     build: ./desarrolloweb
+    restart: unless-stopped
     ports:
-      - "3600:3600"
+      - "8443:8443"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - DATABASE_URL=jdbc:mysql://minimarket.ckbesa4wqwo4.us-east-1.rds.amazonaws.com:3306/minimarket?createDatabaseIfNotExist=true
@@ -23,5 +25,5 @@ services:
       - SERVER_SSL_KEY_STORE_TYPE=PKCS12
       - SERVER_SSL_KEY_ALIAS=desarrolloweb-ssl
       - SERVER_PORT=8443
-
-
+    volumes:
+      - ./desarrolloweb/src/main/resources/desarrolloweb-ssl.p12:/app/desarrolloweb-ssl.p12 

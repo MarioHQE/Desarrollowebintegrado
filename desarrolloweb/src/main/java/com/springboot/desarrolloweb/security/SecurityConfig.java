@@ -38,6 +38,7 @@ public class SecurityConfig {
                                                 .ignoringRequestMatchers("/swagger-ui/**")
                                                 .ignoringRequestMatchers("/swagger-ui.html")
                                                 .disable())
+                                .requiresChannel(chanel -> chanel.anyRequest().requiresSecure())
                                 .authorizeHttpRequests(request -> request
                                                 // =============================================================
                                                 // ENDPOINTS PÚBLICOS (sin autenticación)

@@ -1,0 +1,69 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  EC2_IP: 54.210.224.54
+  EC2_USER: ec2-user
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+        
+    - name: Add EC2 to known hosts
+      run: |
+        ssh-keyscan -H ${{ env.EC2_IP }} >> ~/.ssh/known_hosts
+        
+    - name: Transfer files to EC2
+      run: |
+        # Crear directorio temporal
+        ssh ${{ env.EC2_USER }}@${{ env.EC2_IP }} "mkdir -p ~/app-temp"
+        
+        # Transferir archivos
+        scp -r desarrolloweb ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        scp docker-compose.prod.yml ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        scp docker-compose.ssl-selfsigned.yml ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        scp -r nginx ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        scp deploy-ec2.sh ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        scp deploy-ec2-selfsigned.sh ${{ env.EC2_USER }}@${{ env.EC2_IP }}:~/app-temp/
+        
+    - name: Deploy with Let's Encrypt
+      run: |
+        ssh ${{ env.EC2_USER }}@${{ env.EC2_IP }} "cd ~/app-temp && chmod +x deploy-ec2.sh && ./deploy-ec2.sh"
+      continue-on-error: true
+      
+    - name: Deploy with self-signed SSL (fallback)
+      if: failure()
+      run: |
+        ssh ${{ env.EC2_USER }}@${{ env.EC2_IP }} "cd ~/app-temp && chmod +x deploy-ec2-selfsigned.sh && ./deploy-ec2-selfsigned.sh"
+        
+    - name: Verify deployment
+      run: |
+        # Esperar a que la aplicación esté lista
+        sleep 60
+        
+        # Probar conexión HTTPS
+        if curl -s -k -I "https://${{ env.EC2_IP }}.nip.io" > /dev/null 2>&1; then
+          echo "✅ Deployment with Let's Encrypt successful"
+        elif curl -s -k -I "https://${{ env.EC2_IP }}:8443" > /dev/null 2>&1; then
+          echo "✅ Deployment with self-signed SSL successful"
+        else
+          echo "❌ Deployment failed"
+          exit 1
+        fi
+        
+    - name: Cleanup
+      run: |
+        ssh ${{ env.EC2_USER }}@${{ env.EC2_IP }} "rm -rf ~/app-temp" 
