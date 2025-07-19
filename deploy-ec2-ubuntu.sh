@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Script de despliegue para EC2 con SSL
+# Script de despliegue para EC2 Ubuntu con SSL
 # Ejecutar en la instancia EC2
 
 set -e
 
-echo "🚀 Iniciando despliegue en EC2..."
+echo "🚀 Iniciando despliegue en EC2 Ubuntu..."
 
 # Variables de configuración
 EC2_IP="54.210.224.54"
@@ -17,15 +17,26 @@ echo "🌐 Dominio: $DOMAIN"
 
 # Actualizar sistema
 echo "📦 Actualizando sistema..."
-sudo yum update -y
+sudo apt update && sudo apt upgrade -y
 
 # Instalar Docker
 echo "🐳 Instalando Docker..."
 if ! command -v docker &> /dev/null; then
-    sudo yum install -y docker
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    sudo usermod -a -G docker ec2-user
+    # Instalar dependencias
+    sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+    
+    # Agregar GPG key de Docker
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    
+    # Agregar repositorio de Docker
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    
+    # Instalar Docker
+    sudo apt update
+    sudo apt install -y docker-ce docker-ce-cli containerd.io
+    
+    # Agregar usuario al grupo docker
+    sudo usermod -a -G docker ubuntu
     echo "✅ Docker instalado"
 else
     echo "✅ Docker ya está instalado"
@@ -47,24 +58,15 @@ mkdir -p nginx/conf.d
 mkdir -p certbot/conf
 mkdir -p certbot/www
 
-# Configurar firewall
+# Configurar firewall (ufw en Ubuntu)
 echo "🔥 Configurando firewall..."
-if command -v firewall-cmd &> /dev/null; then
-    sudo systemctl start firewalld
-    sudo systemctl enable firewalld
-    sudo firewall-cmd --permanent --add-service=http
-    sudo firewall-cmd --permanent --add-service=https
-    sudo firewall-cmd --reload
-    echo "✅ Firewall configurado"
-else
-    echo "⚠️  Firewalld no disponible, configurando con iptables..."
-    sudo yum install -y iptables-services
-    sudo systemctl start iptables
-    sudo systemctl enable iptables
-    sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-    sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-    sudo service iptables save
-fi
+sudo ufw --force enable
+sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 8443/tcp
+sudo ufw reload
+echo "✅ Firewall configurado"
 
 # Detener servicios existentes
 echo "🛑 Deteniendo servicios existentes..."
@@ -136,7 +138,7 @@ EOF
 chmod +x renew-ssl.sh
 
 # Agregar renovación automática al crontab
-(crontab -l 2>/dev/null; echo "0 12 * * * /home/ec2-user/renew-ssl.sh >> /home/ec2-user/ssl-renewal.log 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "0 12 * * * /home/ubuntu/renew-ssl.sh >> /home/ubuntu/ssl-renewal.log 2>&1") | crontab -
 
 echo ""
 echo "🎉 Despliegue completado exitosamente!"
@@ -145,4 +147,4 @@ echo "📊 Swagger: https://$DOMAIN/swagger-ui.html"
 echo "📖 API Docs: https://$DOMAIN/v3/api-docs/"
 echo ""
 echo "🔄 Renovación automática de SSL configurada (diaria a las 12:00)"
-echo "📝 Logs de renovación: /home/ec2-user/ssl-renewal.log" 
+echo "📝 Logs de renovación: /home/ubuntu/ssl-renewal.log" 
