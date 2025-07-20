@@ -34,7 +34,7 @@ public class pagocontroller {
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> StripeWebhook(@RequestHeader("Stripe-Signature") String SignHeader,
+    public ResponseEntity<String> StripeWebhook(@RequestHeader(name = "Stripe-Signature") String SignHeader,
             @RequestBody String Payload)
             throws JsonProcessingException, StripeException {
         log.info("Webhook received with signature: {}", SignHeader);
