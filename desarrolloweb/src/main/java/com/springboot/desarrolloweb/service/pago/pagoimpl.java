@@ -106,7 +106,7 @@ public class pagoimpl implements pagoservice {
 
                 try {
                         // Construir el evento usando el webhook secret
-                        event = Webhook.constructEvent(payload, signHeader, webhookSecret);
+                        event = Webhook.constructEvent(payload, signHeader, "whsec_yx6DXOKpcBGVYTF5iwJnya4EtbwL7Lfw");
 
                         log.info("Webhook recibido: " + event.getType());
 
