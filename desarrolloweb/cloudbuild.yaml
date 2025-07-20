@@ -1,0 +1,40 @@
+steps:
+  # Construir la imagen Docker (que incluye la construcción con Maven)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/desarrolloweb-backend:latest', '.']
+
+  # Subir la imagen al Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/desarrolloweb-backend:latest']
+
+  # Desplegar en Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'desarrolloweb-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/desarrolloweb-backend:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--set-env-vars'
+      - 'SPRING_PROFILES_ACTIVE=prod'
+
+# Configurar las imágenes que se crearán
+images:
+  - 'gcr.io/$PROJECT_ID/desarrolloweb-backend:latest'
+
+# Configurar el timeout
+timeout: '1200s' 

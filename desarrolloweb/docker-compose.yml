@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: desarrolloweb-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: desarrolloweb
+      MYSQL_USER: desarrolloweb-user
+      MYSQL_PASSWORD: desarrolloweb-password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - desarrolloweb-network
+
+  # Aplicación Spring Boot
+  app:
+    build: .
+    container_name: desarrolloweb-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=jdbc:mysql://mysql:3306/desarrolloweb
+      - DB_USERNAME=desarrolloweb-user
+      - DB_PASSWORD=desarrolloweb-password
+      - JWT_SECRET_KEY=your-secret-key-here
+      - JWT_EXPIRATION=86400000
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=your-email@gmail.com
+      - MAIL_PASSWORD=your-app-password
+      - STRIPE_SECRET_KEY=your-stripe-secret-key
+      - STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+      - AWS_ACCESS_KEY_ID=your-aws-access-key
+      - AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+      - AWS_S3_REGION=us-east-1
+      - AWS_S3_BUCKET_NAME=your-bucket-name
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      - mysql
+    networks:
+      - desarrolloweb-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  desarrolloweb-network:
+    driver: bridge 
