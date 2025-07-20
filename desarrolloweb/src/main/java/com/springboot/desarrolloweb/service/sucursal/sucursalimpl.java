@@ -74,7 +74,8 @@ public class sucursalimpl implements sucursalimplservice {
     }
 
     public List<sucursal> getListsucursalbyusuario(int idubicacion_usuario, String email) {
-        usuario user = usuariorepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        usuario user = usuariorepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         ubicacion_usuario ubicacion_usuario = user.getUbicacion_usuario().stream()
                 .filter(ub_us -> ub_us.getIdubicacion_usuario() == idubicacion_usuario).findAny()
                 .orElse(null);
