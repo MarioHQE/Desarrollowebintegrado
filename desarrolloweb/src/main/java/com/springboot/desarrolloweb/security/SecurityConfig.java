@@ -166,6 +166,8 @@ public class SecurityConfig {
                 configuration.addAllowedOrigin("https://api.stripe.com"); // Para Stripe
                 configuration.addAllowedOrigin("https://54.210.224.54");
                 configuration.addAllowedOrigin("https://54.210.224.54");
+                configuration.addAllowedOrigin("http://localhost:3600"); // Agregar el puerto de tu app
+                configuration.addAllowedHeader("https://front-minimarketluisa.onrender.com");
                 configuration.addAllowedMethod("*");
                 configuration.addAllowedHeader("*");
                 configuration.setAllowCredentials(true);
