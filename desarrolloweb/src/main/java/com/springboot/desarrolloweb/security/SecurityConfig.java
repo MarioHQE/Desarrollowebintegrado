@@ -167,7 +167,7 @@ public class SecurityConfig {
                 configuration.addAllowedOrigin("https://54.210.224.54");
                 configuration.addAllowedOrigin("https://54.210.224.54");
                 configuration.addAllowedOrigin("http://localhost:3600"); // Agregar el puerto de tu app
-                configuration.addAllowedOrigin("https://front-minimarketluisa.onrender.com");
+                configuration.addAllowedOrigin("https://front-minimarketluisa-xg1f.onrender.com");
                 configuration.addAllowedMethod("*");
                 configuration.addAllowedHeader("*");
                 configuration.setAllowCredentials(true);

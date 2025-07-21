@@ -86,9 +86,9 @@ public class pagoimpl implements pagoservice {
                                 .setPaymentIntentData(SessionCreateParams.PaymentIntentData.builder()
                                                 .putMetadata("pedido_id", String.valueOf(id_pedido))
                                                 .build())
-                                .setSuccessUrl("https://front-minimarketluisa.onrender.com/pedido/" + id_pedido
+                                .setSuccessUrl("https://front-minimarketluisa-xg1f.onrender.com/pedido/" + id_pedido
                                                 + "?payment=success")
-                                .setCancelUrl("https://front-minimarketluisa.onrender.com/pedido/" + id_pedido
+                                .setCancelUrl("https://front-minimarketluisa-xg1f.onrender.com/pedido/" + id_pedido
                                                 + "?payment=cancelled")
                                 .addAllLineItem(lista)
                                 .build();
