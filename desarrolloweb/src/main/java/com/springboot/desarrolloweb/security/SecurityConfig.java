@@ -38,7 +38,8 @@ public class SecurityConfig {
                                                 .ignoringRequestMatchers("/swagger-ui/**")
                                                 .ignoringRequestMatchers("/swagger-ui.html")
                                                 .disable())
-                                .requiresChannel(chanel -> chanel.anyRequest().requiresSecure())
+                                // Comentado temporalmente para desarrollo local
+                                // .requiresChannel(chanel -> chanel.anyRequest().requiresSecure())
                                 .authorizeHttpRequests(request -> request
                                                 // =============================================================
                                                 // ENDPOINTS PÚBLICOS (sin autenticación)
@@ -60,7 +61,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/pago/webhook").permitAll()
 
                                                 // Endpoints de vista pública (si tienes frontend integrado)
-                                                .requestMatchers("/index", "/login", "/productohtml").permitAll()
+                                                .requestMatchers("/", "/health", "/index", "/login", "/productohtml")
+                                                .permitAll()
 
                                                 // APIs de consulta pública (productos y sucursales para catálogo)
                                                 .requestMatchers("/producto/all",
@@ -161,13 +163,7 @@ public class SecurityConfig {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.addAllowedOrigin("http://localhost:5173");
-                configuration.addAllowedOrigin("http://localhost:8080");
-                configuration.addAllowedOrigin("http://127.0.0.1:*"); // Para Stripe CLI
                 configuration.addAllowedOrigin("https://api.stripe.com"); // Para Stripe
-                configuration.addAllowedOrigin("https://54.210.224.54");
-                configuration.addAllowedOrigin("https://54.210.224.54");
-                configuration.addAllowedOrigin("http://localhost:3600"); // Agregar el puerto de tu app
-                configuration.addAllowedOrigin("https://front-minimarketluisa-xg1f.onrender.com");
                 configuration.addAllowedMethod("*");
                 configuration.addAllowedHeader("*");
                 configuration.setAllowCredentials(true);
